@@ -2,6 +2,8 @@ $(function(){
   setTray();
   setCanvas();
 
+  $("#colors").on("click", chooseColor);
+
   var image = document.getElementById("source");
   context.drawImage(image, 100,100);
 
@@ -10,19 +12,6 @@ $(function(){
 
   $("#canvas").on("mousedown", mouseDown);
 });
-
-function setTray(){
-  var canvasDiv = document.getElementById("canvasDiv");
-  var tray = document.createElement("div");
-  tray.setAttribute("id", "tray");
-  tray.setAttribute("style", "height:50px;width:900px;background-color:yellow;border:1px solid;");
-  canvasDiv.appendChild(tray);
-
-  var pencil = document.createElement("button");
-  pencil.setAttribute("id", "pencil");
-  pencil.innerHTML = "pencil";
-  tray.appendChild(pencil);
-}
 
 function setCanvas(){
   var canvasDiv = document.getElementById('canvasDiv');
@@ -36,6 +25,40 @@ function setCanvas(){
   context = canvas.getContext("2d");
 }
 
+function setTray(){
+  var canvasDiv = document.getElementById("canvasDiv");
+  var tray = document.createElement("div");
+  tray.setAttribute("id", "tray");
+  tray.setAttribute("style", "height:50px;width:900px;background-color:yellow;border:1px solid;");
+
+  var colorsDiv = document.createElement("div");
+  colorsDiv.setAttribute("id", "colors");
+  tray.appendChild(colorsDiv);
+  canvasDiv.appendChild(tray);
+
+  colors();
+  
+  function colors(){
+    <% Drawing::COLORS.each do |color| %>
+      var <%= color %> = document.createElement("button");
+      <%= color %>.setAttribute("id", "<%= color %>");
+      <%= color %>.innerHTML = "<%= color %>";
+      colorsDiv.appendChild(<%= color %>);
+    <% end %>
+  }
+}
+
+
+function chooseColor(){
+  <% Drawing::COLORS.each do |color| %>
+    $("#<%=color%>").on("click", <%= color %>)
+   
+    function <%= color %>(){
+      context.strokeStyle = "<%= color %>";
+    }
+  <% end %>
+
+}
 
 function mouseDown(e){
   paint = true;
@@ -58,7 +81,6 @@ function mouseUp(e){
 function draw(e){
   if(paint){
     context.beginPath();
-    context.strokeStyle = "green";
     context.lineJoin = "round";
 
     context.moveTo(mouseCoordinates[mouseCoordinates.length-2][0], mouseCoordinates[mouseCoordinates.length-2][1])
