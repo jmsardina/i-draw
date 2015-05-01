@@ -9,8 +9,6 @@ $(function(){
   context = canvas.getContext("2d");
 
   var paint;
-  // xMovement = new Array();
-  // yMovement = new Array();
   mouseCoordinates = new Array();
   $("#canvas").on("mousedown", mouseDown);
 });
@@ -25,22 +23,11 @@ function mouseMove(e){
   if(paint){
     mouseCoordinates.push([e.clientX, e.clientY])
     $(this).on("mouseup", mouseUp);
-
-  // var xPosition = e.clientX;
-  // var yPosition = e.clientY;
-
-  // xMovement = new Array();
-  // yMovement = new Array();
-    // xMovement.push(e.clientX);
-    // yMovement.push(e.clientY);
-    // mouseMove(e);
     draw(e);
   }
 }
 
 function mouseUp(e){
-  // xMovement.push(e.clientX);
-  // yMovement.push(e.clientY);
   paint = false;
 }
 
@@ -49,8 +36,9 @@ function draw(e){
     context.beginPath();
     context.strokeStyle = "green";
     context.lineJoin = "round";
-    context.moveTo(mouseCoordinates[0][0], mouseCoordinates[0][1])
-    context.lineTo(e.clientX, e.clientY)
+
+    context.moveTo(mouseCoordinates[mouseCoordinates.length-2][0], mouseCoordinates[mouseCoordinates.length-2][1])
+    context.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1])
     context.stroke();
   }
 }
