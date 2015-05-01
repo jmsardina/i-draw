@@ -1,75 +1,80 @@
 $(function(){
-  setTray();
-  setCanvas();
+  setUpEnvironment();
 
-  $("#tray").on("click", makeSelections)
-
-  // $("#colors").on("click", chooseColor);
-  // $("#tips").on("click", chooseTip);
-
+  context.globalAlpha = 0.1
   var image = document.getElementById("source");
   context.drawImage(image, 100,100);
 
   var paint;
   mouseCoordinates = new Array();
-
-  $("#canvas").on("mousedown", mouseDown);
 });
 
-function setCanvas(){
-  var canvasDiv = document.getElementById('canvasDiv');
-  var canvas = document.createElement("canvas");
-  canvas.setAttribute("width", "900px");
-  canvas.setAttribute("height", "750px");
-  canvas.setAttribute("id", "canvas");
-  canvas.setAttribute("style", "border:1px solid;margin:auto")
-  canvasDiv.appendChild(canvas);
+function setUpEnvironment(){
+  setTray();
+  setCanvas();
+  $("#tray").on("click", makeSelections)
+  $("#canvas").on("mousedown", mouseDown);
 
-  context = canvas.getContext("2d");
-}
+  function setCanvas(){
+    var canvasDiv = document.getElementById('canvasDiv');
+    var canvas = document.createElement("canvas");
+    canvas.setAttribute("width", "900px");
+    canvas.setAttribute("height", "750px");
+    canvas.setAttribute("id", "canvas");
+    canvas.setAttribute("style", "border:1px solid;margin:auto")
+    canvasDiv.appendChild(canvas);
 
-function setTray(){
-  var canvasDiv = document.getElementById("canvasDiv");
-  var tray = document.createElement("div");
-  tray.setAttribute("id", "tray");
-  tray.setAttribute("style", "height:50px;width:900px;background-color:yellow;border:1px solid;");
-
-  // START TRAY COMPONENTS
-  var colorsDiv = document.createElement("div");
-  colorsDiv.setAttribute("id", "colors");
-  tray.appendChild(colorsDiv);
-
-  var tipsDiv = document.createElement("div");
-  tipsDiv.setAttribute("id", "tips");
-  tray.appendChild(tipsDiv);
-  // END TRAY COMPONENTS
-
-  canvasDiv.appendChild(tray);
-  colors();
-  tips();
-
-  function colors(){
-    <% Drawing::COLORS.each do |color| %>
-      var <%= color %> = document.createElement("button");
-      <%= color %>.setAttribute("id", "<%= color %>");
-      <%= color %>.innerHTML = "<%= color %>";
-      colorsDiv.appendChild(<%= color %>);
-    <% end %>
+    context = canvas.getContext("2d");
   }
 
-  function tips(){
-    <% Drawing::TIPS.each do |tip| %>
-      var size<%= tip %> = document.createElement("button");
-      size<%= tip %>.setAttribute("id", "size<%= tip %>");
-      size<%= tip %>.innerHTML = "size<%= tip %>";
-      tipsDiv.appendChild(size<%= tip %>);
-    <% end %>
+  function setTray(){
+    var canvasDiv = document.getElementById("canvasDiv");
+    var tray = document.createElement("div");
+    tray.setAttribute("id", "tray");
+    tray.setAttribute("style", "height:50px;width:900px;background-color:yellow;border:1px solid;");
+
+    // START TRAY COMPONENTS
+    var colorsDiv = document.createElement("div");
+    colorsDiv.setAttribute("id", "colors");
+    tray.appendChild(colorsDiv);
+
+    var tipsDiv = document.createElement("div");
+    tipsDiv.setAttribute("id", "tips");
+    tray.appendChild(tipsDiv);
+
+    var clearCanvas = document.createElement("button");
+    clearCanvas.setAttribute("id", "clear");
+    clearCanvas.innerHTML = "clear";
+    tray.appendChild(clearCanvas);
+    // END TRAY COMPONENTS
+
+    canvasDiv.appendChild(tray);
+    colors();
+    tips();
+
+    function colors(){
+      <% Drawing::COLORS.each do |color| %>
+        var <%= color %> = document.createElement("button");
+        <%= color %>.setAttribute("id", "<%= color %>");
+        <%= color %>.innerHTML = "<%= color %>";
+        colorsDiv.appendChild(<%= color %>);
+      <% end %>
+    }
+
+    function tips(){
+      <% Drawing::TIPS.each do |tip| %>
+        var size<%= tip %> = document.createElement("button");
+        size<%= tip %>.setAttribute("id", "size<%= tip %>");
+        size<%= tip %>.innerHTML = "size<%= tip %>";
+        tipsDiv.appendChild(size<%= tip %>);
+      <% end %>
+    }
   }
 }
 
 function makeSelections(){
-  $("#colors").on("click", chooseColor);
-  $("#tips").on("click", chooseTip);
+  chooseColor();
+  chooseTip();
 
   function chooseColor(){
     <% Drawing::COLORS.each do |color| %>
@@ -91,7 +96,6 @@ function makeSelections(){
     <% end %>
   }
 }
-
 
 function mouseDown(e){
   paint = true;
@@ -115,6 +119,7 @@ function draw(e){
   if(paint){
     context.beginPath();
     context.lineJoin = "round";
+    context.lineCap = "round";
 
     context.moveTo(mouseCoordinates[mouseCoordinates.length-2][0], mouseCoordinates[mouseCoordinates.length-2][1])
     context.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1])
