@@ -4,8 +4,8 @@ $(function(){
   context.globalAlpha = 0.1
   var image = document.getElementById("source");
   context.drawImage(image, 100,100);
-
   context.globalAlpha = 1;
+
   var paint;
   mouseCoordinates = new Array();
 });
@@ -15,12 +15,13 @@ function setUpEnvironment(){
   setCanvas();
   $("#tray").on("click", makeSelections)
   $("#canvas").on("mousedown", mouseDown);
+  $("#clear").on("click", $("#clear").on("click", function(){context.clearRect(0, 0, canvas.width, canvas.height);}))
 
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
     var canvas = document.createElement("canvas");
     canvas.setAttribute("width", "900px");
-    canvas.setAttribute("height", "750px");
+    canvas.setAttribute("height", "700px");
     canvas.setAttribute("id", "canvas");
     canvas.setAttribute("style", "border:1px solid;margin:auto")
     canvasDiv.appendChild(canvas);
@@ -32,7 +33,7 @@ function setUpEnvironment(){
     var canvasDiv = document.getElementById("canvasDiv");
     var tray = document.createElement("div");
     tray.setAttribute("id", "tray");
-    tray.setAttribute("style", "height:50px;width:900px;background-color:yellow;border:1px solid;");
+    tray.setAttribute("style", "height:100px;width:900px;background-color:yellow;border:1px solid;");
 
     // START TRAY COMPONENTS
     var colorsDiv = document.createElement("div");
@@ -43,10 +44,14 @@ function setUpEnvironment(){
     tipsDiv.setAttribute("id", "tips");
     tray.appendChild(tipsDiv);
 
+    var eraserDiv = document.createElement("div");
+    eraserDiv.setAttribute("id", "eraser-div");
     var clearCanvas = document.createElement("button");
     clearCanvas.setAttribute("id", "clear");
     clearCanvas.innerHTML = "clear";
-    tray.appendChild(clearCanvas);
+
+    eraserDiv.appendChild(clearCanvas);
+    tray.appendChild(eraserDiv);
     // END TRAY COMPONENTS
 
     canvasDiv.appendChild(tray);
