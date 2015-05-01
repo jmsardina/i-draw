@@ -2,7 +2,7 @@ $(function(){
   var canvasDiv = document.getElementById('canvasDiv');
   canvas = document.createElement("canvas");
   canvas.setAttribute("width", "900px");
-  canvas.setAttribute("height", "600px");
+  canvas.setAttribute("height", "800px");
   canvas.setAttribute("id", "canvas");
   canvas.setAttribute("style", "border:1px solid;margin:auto")
   canvasDiv.appendChild(canvas);
