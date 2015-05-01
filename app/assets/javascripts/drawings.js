@@ -19,13 +19,13 @@ $(function(){
 
 function mouseDown(e){
   paint = true;
-  mouseCoordinates.push([e.clientX, e.clientY])
+  mouseCoordinates.push([e.offsetX, e.offsetY])
   $(this).on("mousemove", mouseMove);
 }
 
 function mouseMove(e){
   if(paint){
-    mouseCoordinates.push([e.clientX, e.clientY])
+    mouseCoordinates.push([e.offsetX, e.offsetY])
     $(this).on("mouseup", mouseUp);
     draw(e);
   }
