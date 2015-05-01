@@ -2,7 +2,10 @@ $(function(){
   setTray();
   setCanvas();
 
-  $("#colors").on("click", chooseColor);
+  $("#tray").on("click", makeSelections)
+
+  // $("#colors").on("click", chooseColor);
+  // $("#tips").on("click", chooseTip);
 
   var image = document.getElementById("source");
   context.drawImage(image, 100,100);
@@ -31,13 +34,20 @@ function setTray(){
   tray.setAttribute("id", "tray");
   tray.setAttribute("style", "height:50px;width:900px;background-color:yellow;border:1px solid;");
 
+  // START TRAY COMPONENTS
   var colorsDiv = document.createElement("div");
   colorsDiv.setAttribute("id", "colors");
   tray.appendChild(colorsDiv);
-  canvasDiv.appendChild(tray);
 
+  var tipsDiv = document.createElement("div");
+  tipsDiv.setAttribute("id", "tips");
+  tray.appendChild(tipsDiv);
+  // END TRAY COMPONENTS
+
+  canvasDiv.appendChild(tray);
   colors();
-  
+  tips();
+
   function colors(){
     <% Drawing::COLORS.each do |color| %>
       var <%= color %> = document.createElement("button");
@@ -46,19 +56,42 @@ function setTray(){
       colorsDiv.appendChild(<%= color %>);
     <% end %>
   }
+
+  function tips(){
+    <% Drawing::TIPS.each do |tip| %>
+      var size<%= tip %> = document.createElement("button");
+      size<%= tip %>.setAttribute("id", "size<%= tip %>");
+      size<%= tip %>.innerHTML = "size<%= tip %>";
+      tipsDiv.appendChild(size<%= tip %>);
+    <% end %>
+  }
 }
 
+function makeSelections(){
+  $("#colors").on("click", chooseColor);
+  $("#tips").on("click", chooseTip);
 
-function chooseColor(){
-  <% Drawing::COLORS.each do |color| %>
-    $("#<%=color%>").on("click", <%= color %>)
-   
-    function <%= color %>(){
-      context.strokeStyle = "<%= color %>";
-    }
-  <% end %>
+  function chooseColor(){
+    <% Drawing::COLORS.each do |color| %>
+      $("#<%= color %>").on("click", <%= color %>);
+     
+      function <%= color %>(){
+        context.strokeStyle = "<%= color %>";
+      }
+    <% end %>
+  }
 
+  function chooseTip(){
+    <% Drawing::TIPS.each do |tip| %>
+      $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
+
+      function chooseSize<%= tip %>(){
+        context.lineWidth = <%= tip %>;
+      }
+    <% end %>
+  }
 }
+
 
 function mouseDown(e){
   paint = true;
