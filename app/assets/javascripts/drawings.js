@@ -4,9 +4,13 @@ $(function(){
   canvas.setAttribute("width", "900px");
   canvas.setAttribute("height", "600px");
   canvas.setAttribute("id", "canvas");
+  canvas.setAttribute("style", "border:1px solid;margin:auto")
   canvasDiv.appendChild(canvas);
 
   context = canvas.getContext("2d");
+
+  var image = document.getElementById("source");
+  context.drawImage(image, 100,100);
 
   var paint;
   mouseCoordinates = new Array();
