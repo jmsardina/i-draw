@@ -1,6 +1,5 @@
 $(function(){
   setUpEnvironment();
-
   var paint;
   mouseCoordinates = new Array();
 });
@@ -13,12 +12,13 @@ function chooseImage(){
       function chooseCartoon<%= cartoon.id %>(){
         context.globalAlpha = 0.1;
         var image = document.getElementById("cartoon-<%= cartoon.id %>");
-        context.drawImage(image, 100,100);
+        context.drawImage(image, canvas.height/2-100, 0, canvas.width-300, canvas.height );
         context.globalAlpha = 1;
       }
     <% end %>
   }
 }
+
 
 function setUpEnvironment(){
   setTray();
@@ -32,7 +32,7 @@ function setUpEnvironment(){
     var canvasDiv = document.getElementById('canvasDiv');
     var canvas = document.createElement("canvas");
     canvas.setAttribute("width", "900px");
-    canvas.setAttribute("height", "700px");
+    canvas.setAttribute("height", "500px");
     canvas.setAttribute("id", "canvas");
     canvas.setAttribute("style", "border:1px solid;margin:auto")
     canvasDiv.appendChild(canvas);
