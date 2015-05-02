@@ -1,19 +1,30 @@
 $(function(){
   setUpEnvironment();
 
-  context.globalAlpha = 0.1
-  var image = document.getElementById("source");
-  context.drawImage(image, 100,100);
-  context.globalAlpha = 1;
-
   var paint;
   mouseCoordinates = new Array();
 });
+
+function chooseImage(){
+  chooseCartoon();
+  function chooseCartoon(){
+    <% Cartoon.all.each do |cartoon| %>
+      $("#cartoon-<%= cartoon.id %>").on("click", chooseCartoon<%= cartoon.id %>);
+      function chooseCartoon<%= cartoon.id %>(){
+        context.globalAlpha = 0.1;
+        var image = document.getElementById("cartoon-<%= cartoon.id %>");
+        context.drawImage(image, 100,100);
+        context.globalAlpha = 1;
+      }
+    <% end %>
+  }
+}
 
 function setUpEnvironment(){
   setTray();
   setCanvas();
   $("#tray").on("click", makeSelections)
+  $("#all-cartoons").on("click", chooseImage);
   $("#canvas").on("mousedown", mouseDown);
   $("#clear").on("click", $("#clear").on("click", function(){context.clearRect(0, 0, canvas.width, canvas.height);}))
 

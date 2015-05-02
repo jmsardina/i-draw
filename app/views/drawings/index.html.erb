@@ -1,5 +1,20 @@
 <div id="canvasDiv" style="height:800px;width:900px;border:1px;margin:auto"></div>
 
-<div style="display:none;">
+<!-- <div style="display:none;">
   <img id="source" src="http://azcoloring.com/coloring/dT9/Rab/dT9RabyT7.jpg" width="300" height="auto" margin="auto" opacity="0.2" filter="alpha(opacity=20)">
+</div> -->
+
+<div id="new-cartoon">
+  <%= form_for(@cartoon) do |f| %>
+    <%= f.text_field :name, placeholder: "Cartoon Name" %>
+    <%= f.file_field :avatar %>
+  <% end %>
+</div>
+
+<div id="all-cartoons">
+  <% @cartoons.each do |cartoon| %>
+    <div>
+      <%= image_tag cartoon.avatar.url(:thumb), id: "cartoon-#{cartoon.id}" %>
+    </div>
+  <% end %>
 </div>
