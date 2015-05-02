@@ -10,15 +10,14 @@ function chooseImage(){
     <% Cartoon.all.each do |cartoon| %>
       $("#cartoon-<%= cartoon.id %>").on("click", chooseCartoon<%= cartoon.id %>);
       function chooseCartoon<%= cartoon.id %>(){
-        context.globalAlpha = 0.1;
+        imageHolderContext.globalAlpha = 0.1;
         var image = document.getElementById("cartoon-<%= cartoon.id %>");
-        context.drawImage(image, canvas.height/2-100, 0, canvas.width-300, canvas.height );
+        imageHolderContext.drawImage(image, canvas.height/4, 0, canvas.width-300, canvas.height);
         context.globalAlpha = 1;
       }
     <% end %>
   }
 }
-
 
 function setUpEnvironment(){
   setTray();
@@ -30,14 +29,22 @@ function setUpEnvironment(){
 
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
+    var imageHolder = document.createElement("canvas");
+    imageHolder.setAttribute("id", "image-holder");
+    imageHolder.setAttribute("width", "900px");
+    imageHolder.setAttribute("height", "500px");
+    imageHolder.setAttribute("style", "border:1px solid;margin:auto;z-index:10;position:absolute;")
+
     var canvas = document.createElement("canvas");
     canvas.setAttribute("width", "900px");
     canvas.setAttribute("height", "500px");
     canvas.setAttribute("id", "canvas");
-    canvas.setAttribute("style", "border:1px solid;margin:auto")
-    canvasDiv.appendChild(canvas);
+    canvas.setAttribute("style", "border:1px solid;margin:auto;z-index:15;position:absolute;")
 
+    canvasDiv.appendChild(imageHolder);
+    canvasDiv.appendChild(canvas);
     context = canvas.getContext("2d");
+    imageHolderContext = imageHolder.getContext("2d");
   }
 
   function setTray(){
