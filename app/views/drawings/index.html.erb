@@ -1,5 +1,12 @@
 <div id="header-div">
-  HEADER HERE!
+  <div class="right">
+    <div class="search">
+      <%= form_tag :controller => 'drawing', :action => 'index', :method => 'get' do %>
+        <%= text_field_tag :keyword, params[:keyword], :id => 'search_field' %>
+        <%= submit_tag "Search! ", :content => nil %> 
+      <% end %> 
+    </div>
+  </div>
 </div>
 
 <table>
@@ -8,8 +15,8 @@
   </td>
 
   <td>
+    <div id="cartoons-header"><h4>Choose Your Favorite</h4></div>
     <div id="all-cartoons">
-      <h4>Choose Your Favorite!</h4>
       <% @cartoons.each do |cartoon| %>
         <div>
           <%= image_tag cartoon.avatar.url(:thumb), id: "cartoon-#{cartoon.id}" %>
@@ -19,6 +26,11 @@
   </td>
 
   <td>
+
+    <%= render 'search/create' if @results %>
+
+  </td>
+</table>
     <div id="new-cartoon">
       <%= form_for(@cartoon) do |f| %>
         <%= f.label :name, "Upload an Image!" %><br>
@@ -26,5 +38,3 @@
         <%= f.file_field :avatar %>
       <% end %>
     </div>
-  </td>
-</table>

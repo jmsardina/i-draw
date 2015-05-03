@@ -81,7 +81,6 @@ function setUpEnvironment(){
     }
 
     function tips(){
-      debugger
       <% Drawing::TIPS.each do |tip| %>
         var size<%= tip %> = document.createElement("div");
         size<%= tip %>.setAttribute("id", "size<%= tip %>");
