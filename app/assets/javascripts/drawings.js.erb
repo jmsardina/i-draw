@@ -8,15 +8,23 @@ function chooseImage(){
   chooseCartoon();
   function chooseCartoon(){
     <% Cartoon.all.each do |cartoon| %>
-      $("#cartoon-<%= cartoon.id %>").on("click", chooseCartoon<%= cartoon.id %>);
+      $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
       function chooseCartoon<%= cartoon.id %>(){
         imageHolderContext.globalAlpha = 0.1;
-        var image = document.getElementById("cartoon-<%= cartoon.id %>");
+        var image = this;
         imageHolderContext.drawImage(image, canvas.height/4-50, 15, canvas.width/4-80, canvas.height/4);
         context.globalAlpha = 1;
       }
     <% end %>
   }
+}
+
+function clearCanvas(){
+  context.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function erasing(){
+  context.globalCompositeOperation = "destination-out";
 }
 
 function setUpEnvironment(){
@@ -25,7 +33,8 @@ function setUpEnvironment(){
   $("#tray").on("click", makeSelections)
   $("#all-cartoons").on("click", chooseImage);
   $("#canvas").on("mousedown", mouseDown);
-  $("#clear").on("click", $("#clear").on("click", function(){context.clearRect(0, 0, canvas.width, canvas.height);}))
+  $("#clear").on("click", clearCanvas);
+  $("#eraser").on("click", erasing);
 
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
@@ -57,13 +66,28 @@ function setUpEnvironment(){
     tipsDiv.setAttribute("id", "tips");
     tray.appendChild(tipsDiv);
 
+    var toolsDiv = document.createElement("div");
+    toolsDiv.setAttribute("id", "tools");
+    tray.appendChild(toolsDiv);
+
+    var marker = document.createElement("button");
+    marker.setAttribute("id", "marker");
+    marker.innerHTML = "marker";
+    toolsDiv.appendChild(marker);
+
     var eraserDiv = document.createElement("div");
     eraserDiv.setAttribute("id", "eraser-div");
+
     var clearCanvas = document.createElement("button");
     clearCanvas.setAttribute("id", "clear");
     clearCanvas.innerHTML = "clear";
 
+    var eraser = document.createElement("button");
+    eraser.setAttribute("id", "eraser");
+    eraser.innerHTML = "eraser"
+
     eraserDiv.appendChild(clearCanvas);
+    eraserDiv.appendChild(eraser);
     tray.appendChild(eraserDiv);
     // END TRAY COMPONENTS
 
@@ -101,6 +125,7 @@ function makeSelections(){
       $("#<%= color %>").on("click", <%= color %>);
      
       function <%= color %>(){
+        context.globalCompositeOperation = "source-over";
         context.strokeStyle = "<%= color %>";
       }
     <% end %>

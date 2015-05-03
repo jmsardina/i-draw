@@ -19,22 +19,21 @@
     <div id="all-cartoons">
       <% @cartoons.each do |cartoon| %>
         <div>
-          <%= image_tag cartoon.avatar.url(:thumb), id: "cartoon-#{cartoon.id}" %>
+          <%= image_tag cartoon.avatar.url(:thumb), class: "cartoon-#{cartoon.id}" %>
         </div>
       <% end %>
     </div>
   </td>
 
   <td>
-
     <%= render 'search/create' if @results %>
-
   </td>
 </table>
-    <div id="new-cartoon">
-      <%= form_for(@cartoon) do |f| %>
-        <%= f.label :name, "Upload an Image!" %><br>
-        <%= f.text_field :name, placeholder: "Cartoon Name" %>
-        <%= f.file_field :avatar %>
-      <% end %>
-    </div>
+
+<div id="new-cartoon">
+  <%= form_for(@cartoon) do |f| %>
+    <%= f.label :name, "Upload an Image!" %><br>
+    <%= f.text_field :name, placeholder: "Cartoon Name" %>
+    <%= f.file_field :avatar %>
+  <% end %>
+</div>

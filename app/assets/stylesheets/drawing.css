@@ -71,12 +71,12 @@
 }
 
 div#cartoons-header {
-  margin-top: -100px;
+  margin-top: -120px;
   margin-left: 15px;
 }
 
 #all-cartoons {
-  height: 450px;
+  height: 460px;
   overflow: scroll;
   margin-left: 15px;
   text-align: center;
@@ -85,4 +85,3 @@ div#cartoons-header {
 #new-cartoon {
   margin-top: -100px;
 }
-
