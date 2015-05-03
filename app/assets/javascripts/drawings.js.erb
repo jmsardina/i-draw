@@ -12,7 +12,7 @@ function chooseImage(){
       function chooseCartoon<%= cartoon.id %>(){
         imageHolderContext.globalAlpha = 0.1;
         var image = document.getElementById("cartoon-<%= cartoon.id %>");
-        imageHolderContext.drawImage(image, canvas.height/4, 0, canvas.width-300, canvas.height);
+        imageHolderContext.drawImage(image, canvas.height/4-50, 15, canvas.width/4-80, canvas.height/4);
         context.globalAlpha = 1;
       }
     <% end %>
