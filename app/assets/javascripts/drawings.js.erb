@@ -27,6 +27,11 @@ function erasing(){
   context.globalCompositeOperation = "destination-out";
 }
 
+function hideImage(){
+  var image = document.getElementById("solid-white");
+  midLayerContext.drawImage(image, 0, 0, canvas.width, canvas.height);
+}
+
 function setUpEnvironment(){
   setTray();
   setCanvas();
@@ -35,11 +40,14 @@ function setUpEnvironment(){
   $("#canvas").on("mousedown", mouseDown);
   $("#clear").on("click", clearCanvas);
   $("#eraser").on("click", erasing);
+  $("#hide-image").on("click", hideImage);
 
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
     var imageHolder = document.createElement("canvas");
     imageHolder.setAttribute("id", "image-holder");
+    var midLayer = document.createElement("canvas");
+    midLayer.setAttribute("id", "mid-layer");
 
     var canvas = document.createElement("canvas");
     canvas.setAttribute("id", "canvas");
@@ -47,9 +55,11 @@ function setUpEnvironment(){
     canvas.setAttribute("height", "500px");
 
     canvasDiv.appendChild(imageHolder);
+    canvasDiv.appendChild(midLayer);
     canvasDiv.appendChild(canvas);
-    context = canvas.getContext("2d");
     imageHolderContext = imageHolder.getContext("2d");
+    midLayerContext = midLayer.getContext("2d");
+    context = canvas.getContext("2d");
   }
 
   function setTray(){
@@ -66,29 +76,27 @@ function setUpEnvironment(){
     tipsDiv.setAttribute("id", "tips");
     tray.appendChild(tipsDiv);
 
-    var toolsDiv = document.createElement("div");
-    toolsDiv.setAttribute("id", "tools");
-    tray.appendChild(toolsDiv);
-
-    var marker = document.createElement("button");
-    marker.setAttribute("id", "marker");
-    marker.innerHTML = "marker";
-    toolsDiv.appendChild(marker);
-
     var eraserDiv = document.createElement("div");
     eraserDiv.setAttribute("id", "eraser-div");
 
     var clearCanvas = document.createElement("button");
     clearCanvas.setAttribute("id", "clear");
-    clearCanvas.innerHTML = "clear";
+    clearCanvas.setAttribute("style", "border-radius:25%")
+    clearCanvas.innerHTML = "Start Over";
 
-    var eraser = document.createElement("button");
+    var eraser = document.createElement("div");
     eraser.setAttribute("id", "eraser");
-    eraser.innerHTML = "eraser"
+    eraser.setAttribute("style", "background: url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/64/Actions-draw-eraser-icon.png) no-repeat center;height:50px;width:50px");
+
+    var hideImage = document.createElement("button");
+    hideImage.setAttribute("id", "hide-image");
+    hideImage.innerHTML = "Done!";
 
     eraserDiv.appendChild(clearCanvas);
     eraserDiv.appendChild(eraser);
+    eraserDiv.appendChild(hideImage);
     tray.appendChild(eraserDiv);
+
     // END TRAY COMPONENTS
 
     canvasDiv.appendChild(tray);

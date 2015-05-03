@@ -17,6 +17,7 @@
   <td>
     <div id="cartoons-header"><h4>Choose Your Favorite</h4></div>
     <div id="all-cartoons">
+      <img id="solid-white" src="<%= asset_path('solid-white.png') %>"/ height="10px" width="10px">
       <% @cartoons.each do |cartoon| %>
         <div>
           <%= image_tag cartoon.avatar.url(:thumb), class: "cartoon-#{cartoon.id}" %>
