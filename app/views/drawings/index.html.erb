@@ -1,17 +1,30 @@
-<div id="canvasDiv" style="height:600px;width:900px;border:1px;margin:auto"></div>
-
-<div id="new-cartoon">
-  <%= form_for(@cartoon) do |f| %>
-    <%= f.text_field :name, placeholder: "Cartoon Name" %>
-    <%= f.file_field :avatar %>
-  <% end %>
+<div id="header-div">
+  HEADER HERE!
 </div>
 
-<div id="all-cartoons">
-  <% @cartoons.each do |cartoon| %>
-    <div>
-      <%= image_tag cartoon.avatar.url(:thumb), id: "cartoon-#{cartoon.id}" %>
+<table>
+  <td>
+    <div id="canvasDiv"></div>
+  </td>
+
+  <td>
+    <div id="all-cartoons">
+      <h4>Choose Your Favorite!</h4>
+      <% @cartoons.each do |cartoon| %>
+        <div>
+          <%= image_tag cartoon.avatar.url(:thumb), id: "cartoon-#{cartoon.id}" %>
+        </div>
+      <% end %>
     </div>
-  <% end %>
-</div>
-<button id="remove-image"></button>
+  </td>
+
+  <td>
+    <div id="new-cartoon">
+      <%= form_for(@cartoon) do |f| %>
+        <%= f.label :name, "Upload an Image!" %><br>
+        <%= f.text_field :name, placeholder: "Cartoon Name" %>
+        <%= f.file_field :avatar %>
+      <% end %>
+    </div>
+  </td>
+</table>

@@ -1,4 +1,4 @@
 class Drawing < ActiveRecord::Base
   COLORS = ["blue", "yellow", "red", "green", "pink", "brown", "purple", "black", "white", "orange"]
-  TIPS = ((1..10).to_a)
+  TIPS = [3, 6, 9, 12, 15, 18, 21, 24]
 end

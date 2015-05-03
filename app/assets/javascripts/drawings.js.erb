@@ -31,15 +31,11 @@ function setUpEnvironment(){
     var canvasDiv = document.getElementById('canvasDiv');
     var imageHolder = document.createElement("canvas");
     imageHolder.setAttribute("id", "image-holder");
-    imageHolder.setAttribute("width", "900px");
-    imageHolder.setAttribute("height", "500px");
-    imageHolder.setAttribute("style", "border:1px solid;margin:auto;z-index:10;position:absolute;")
 
     var canvas = document.createElement("canvas");
+    canvas.setAttribute("id", "canvas");
     canvas.setAttribute("width", "900px");
     canvas.setAttribute("height", "500px");
-    canvas.setAttribute("id", "canvas");
-    canvas.setAttribute("style", "border:1px solid;margin:auto;z-index:15;position:absolute;")
 
     canvasDiv.appendChild(imageHolder);
     canvasDiv.appendChild(canvas);
@@ -51,7 +47,6 @@ function setUpEnvironment(){
     var canvasDiv = document.getElementById("canvasDiv");
     var tray = document.createElement("div");
     tray.setAttribute("id", "tray");
-    tray.setAttribute("style", "height:100px;width:900px;background-color:yellow;border:1px solid;");
 
     // START TRAY COMPONENTS
     var colorsDiv = document.createElement("div");
@@ -80,16 +75,18 @@ function setUpEnvironment(){
       <% Drawing::COLORS.each do |color| %>
         var <%= color %> = document.createElement("button");
         <%= color %>.setAttribute("id", "<%= color %>");
-        <%= color %>.innerHTML = "<%= color %>";
+        <%= color %>.setAttribute("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px")
         colorsDiv.appendChild(<%= color %>);
       <% end %>
     }
 
     function tips(){
+      debugger
       <% Drawing::TIPS.each do |tip| %>
-        var size<%= tip %> = document.createElement("button");
+        var size<%= tip %> = document.createElement("div");
         size<%= tip %>.setAttribute("id", "size<%= tip %>");
-        size<%= tip %>.innerHTML = "size<%= tip %>";
+        size<%= tip %>.setAttribute("class", "tip")
+        size<%= tip %>.setAttribute("style", "background-color:black;border-radius:50%;height:<%= tip %>px;width:<%= tip %>px;display:inline-block;");
         tipsDiv.appendChild(size<%= tip %>);
       <% end %>
     }
