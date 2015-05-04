@@ -5,6 +5,7 @@ $(function(){
   $("#overlay-base").hide();
   $(".search").children("form").on("submit", overlay);
   $(document).on("click", "button#close-overlay", hideOverlay);
+  chooseCartoon();
 });
 
 function chooseCartoon(){
@@ -15,6 +16,7 @@ function chooseCartoon(){
       var image = this;
       imageHolderContext.drawImage(image, canvas.height/4-50, 15, canvas.width/4-80, canvas.height/4);
       context.globalAlpha = 1;
+      hideOverlay();
     }
   <% end %>
 }
@@ -41,7 +43,7 @@ function setUpEnvironment(){
   setCanvas();
   $("#tips").on("click", chooseTip);
   $("#colors").on("click", chooseColor);
-  $("#all-cartoons").on("click", chooseCartoon);
+  // $("#all-cartoons").on("click", chooseCartoon);
   $("#canvas").on("mousedown", mouseDown);
   $("#clear").on("click", clearCanvas);
   $("#eraser").on("click", erasing);
@@ -183,14 +185,12 @@ function draw(e){
 // OVERLAY
 function overlay(e){
   e.preventDefault();
-    // var cartoonName = $(this).children("input#search-field").attr('value');
   var $form = $(this);
   var href = "/search"
 
   $.ajax(href, {
     method: "GET",
     "data": $form.serialize(),
-    // "data": {cartoon: cartoonName},
     "complete": function(response){
       $("div#results-div").html(response.responseText);
       $("#overlay-base").show();
