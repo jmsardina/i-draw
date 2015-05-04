@@ -1,7 +1,0 @@
-<div id="search-results"> 
-  <% @results.try(:each) do |result| %>
-    <div>
-      <%= image_tag result.avatar.url(:thumb), class: "cartoon-#{ result.id }" %>
-    </div>
-  <% end %>
-</div>

@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   root 'drawings#index'
   post '/cartoons' => 'cartoons#create'
-  post '/search' => 'search#create'
-  get '/search' => 'drawing#index'
+  get '/search' => 'search#search'
+  post '/search' => 'search#search'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

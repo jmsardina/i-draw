@@ -2,21 +2,21 @@ $(function(){
   setUpEnvironment();
   var paint;
   mouseCoordinates = new Array();
+  $("#overlay-base").hide();
+  $(".search").children("form").on("submit", overlay);
+  $(document).on("click", "button#close-overlay", hideOverlay);
 });
 
-function chooseImage(){
-  chooseCartoon();
-  function chooseCartoon(){
-    <% Cartoon.all.each do |cartoon| %>
-      $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
-      function chooseCartoon<%= cartoon.id %>(){
-        imageHolderContext.globalAlpha = 0.1;
-        var image = this;
-        imageHolderContext.drawImage(image, canvas.height/4-50, 15, canvas.width/4-80, canvas.height/4);
-        context.globalAlpha = 1;
-      }
-    <% end %>
-  }
+function chooseCartoon(){
+  <% Cartoon.all.each do |cartoon| %>
+    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
+    function chooseCartoon<%= cartoon.id %>(){
+      imageHolderContext.globalAlpha = 0.1;
+      var image = this;
+      imageHolderContext.drawImage(image, canvas.height/4-50, 15, canvas.width/4-80, canvas.height/4);
+      context.globalAlpha = 1;
+    }
+  <% end %>
 }
 
 function clearCanvas(){
@@ -25,18 +25,23 @@ function clearCanvas(){
 
 function erasing(){
   context.globalCompositeOperation = "destination-out";
+  $("#canvas").attr("class", "erasing");
 }
 
 function hideImage(){
-  var image = document.getElementById("solid-white");
+  var response = confirm("Are you sure?");
+  if(response){
+    var image = document.getElementById("solid-white");
   midLayerContext.drawImage(image, 0, 0, canvas.width, canvas.height);
+  }
 }
 
 function setUpEnvironment(){
   setTray();
   setCanvas();
-  $("#tray").on("click", makeSelections)
-  $("#all-cartoons").on("click", chooseImage);
+  $("#tips").on("click", chooseTip);
+  $("#colors").on("click", chooseColor);
+  $("#all-cartoons").on("click", chooseCartoon);
   $("#canvas").on("mousedown", mouseDown);
   $("#clear").on("click", clearCanvas);
   $("#eraser").on("click", erasing);
@@ -124,30 +129,25 @@ function setUpEnvironment(){
   }
 }
 
-function makeSelections(){
-  chooseColor();
-  chooseTip();
+function chooseColor(){
+  <% Drawing::COLORS.each do |color| %>
+    $("#<%= color %>").on("click", <%= color %>);
+   
+    function <%= color %>(){
+      context.globalCompositeOperation = "source-over";
+      context.strokeStyle = "<%= color %>";
+    }
+  <% end %>
+}
 
-  function chooseColor(){
-    <% Drawing::COLORS.each do |color| %>
-      $("#<%= color %>").on("click", <%= color %>);
-     
-      function <%= color %>(){
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "<%= color %>";
-      }
-    <% end %>
-  }
+function chooseTip(){
+  <% Drawing::TIPS.each do |tip| %>
+    $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
 
-  function chooseTip(){
-    <% Drawing::TIPS.each do |tip| %>
-      $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
-
-      function chooseSize<%= tip %>(){
-        context.lineWidth = <%= tip %>;
-      }
-    <% end %>
-  }
+    function chooseSize<%= tip %>(){
+      context.lineWidth = <%= tip %>;
+    }
+  <% end %>
 }
 
 function mouseDown(e){
@@ -178,4 +178,26 @@ function draw(e){
     context.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1])
     context.stroke();
   }
+}
+
+// OVERLAY
+function overlay(e){
+  e.preventDefault();
+    // var cartoonName = $(this).children("input#search-field").attr('value');
+  var $form = $(this);
+  var href = "/search"
+
+  $.ajax(href, {
+    method: "GET",
+    "data": $form.serialize(),
+    // "data": {cartoon: cartoonName},
+    "complete": function(response){
+      $("div#results-div").html(response.responseText);
+      $("#overlay-base").show();
+    }
+  });
+}
+
+function hideOverlay(){
+  $("#overlay-base").hide();
 }
