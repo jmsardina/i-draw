@@ -82,6 +82,11 @@
 
 .tip {
   margin: 5px;
+  cursor: pointer;
+}
+
+.tip:hover {
+  padding: 5px;
 }
 
 div#cartoons-header {
@@ -104,6 +109,7 @@ div#cartoons-header {
 
 #eraser {
   cursor: pointer;
+  margin: auto;
 }
 
 .modal-base {
@@ -174,4 +180,10 @@ label {
 .modal-text {
   padding-left: 5%;
   padding-right: 5%;
+}
+
+#start-over {
+  margin: auto;
+  border-radius: 33%;
+  margin-top:5px;
 }

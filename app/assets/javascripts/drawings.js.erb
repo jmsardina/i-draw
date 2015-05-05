@@ -99,8 +99,7 @@ function setUpEnvironment(){
 
     var clearCanvas = document.createElement("button");
     clearCanvas.setAttribute("id", "start-over");
-    clearCanvas.setAttribute("style", "border-radius:25%")
-    clearCanvas.innerHTML = "Start Over";
+    clearCanvas.innerHTML = "Erase Everything";
 
     var eraser = document.createElement("div");
     eraser.setAttribute("id", "eraser");
@@ -125,6 +124,7 @@ function setUpEnvironment(){
       <% Drawing::COLORS.each do |color| %>
         var <%= color %> = document.createElement("button");
         <%= color %>.setAttribute("id", "<%= color %>");
+        <%= color %>.setAttribute("class", "color");
         <%= color %>.setAttribute("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px")
         colorsDiv.appendChild(<%= color %>);
       <% end %>
@@ -138,6 +138,7 @@ function setUpEnvironment(){
         size<%= tip %>.setAttribute("id", "size<%= tip %>");
         size<%= tip %>.setAttribute("class", "tip")
         size<%= tip %>.setAttribute("style", "background-color:black;border-radius:50%;height:<%= tip %>px;width:<%= tip %>px;display:inline-block;");
+        debugger
         tipsDiv.appendChild(size<%= tip %>);
       <% end %>
     }
@@ -151,6 +152,7 @@ function chooseColor(){
     function <%= color %>(){
       context.globalCompositeOperation = "source-over";
       context.strokeStyle = "<%= color %>";
+      <%= color %>.setAttribute("style", "background-color:green")
     }
   <% end %>
 }
