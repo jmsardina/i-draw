@@ -2,21 +2,28 @@ $(function(){
   setUpEnvironment();
   var paint;
   mouseCoordinates = new Array();
-  $("#overlay-base").hide();
-  $(".search").children("form").on("submit", overlay);
-  $(document).on("click", "button#close-overlay", hideOverlay);
+  $(".modal-base").hide();
+  $(".search").children("form").on("submit", showSearchModal);
+  $(document).on("click", "button#close-modal", hideModal);
   chooseCartoon();
+  $("#about-modal-base").hide()
+  $("#about").on("click", showAboutModal);
+  $("#html5colorpicker").on("change", pickColor);
 });
+
+function showAboutModal(){
+  $("#about-modal-base").show()
+}
 
 function chooseCartoon(){
   <% Cartoon.all.each do |cartoon| %>
     $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
     function chooseCartoon<%= cartoon.id %>(){
-      imageHolderContext.globalAlpha = 0.1;
+      imageHolderContext.globalAlpha = 0.3;
       var image = this;
       imageHolderContext.drawImage(image, canvas.height/4-50, 15, canvas.width/4-80, canvas.height/4);
       context.globalAlpha = 1;
-      hideOverlay();
+      hideModal();
     }
   <% end %>
 }
@@ -117,6 +124,8 @@ function setUpEnvironment(){
         <%= color %>.setAttribute("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px")
         colorsDiv.appendChild(<%= color %>);
       <% end %>
+      var colorPicker = document.getElementById("html5DIV");
+      colorsDiv.appendChild(colorPicker);
     }
 
     function tips(){
@@ -182,8 +191,7 @@ function draw(e){
   }
 }
 
-// OVERLAY
-function overlay(e){
+function showSearchModal(e){
   e.preventDefault();
   var $form = $(this);
   var href = "/search"
@@ -193,11 +201,16 @@ function overlay(e){
     "data": $form.serialize(),
     "complete": function(response){
       $("div#results-div").html(response.responseText);
-      $("#overlay-base").show();
+      $("#search-modal-base").show();
     }
   });
 }
 
-function hideOverlay(){
-  $("#overlay-base").hide();
+function hideModal(){
+  $(".modal-base").hide();
+}
+
+function pickColor(){
+  context.globalCompositeOperation = "source-over"
+  context.strokeStyle = $(this).val();
 }

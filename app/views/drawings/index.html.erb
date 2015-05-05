@@ -1,4 +1,10 @@
 <div id="header-div">
+  <div class="left">
+    <div id="about">
+      <h2>I CAN DRAW!</h2>
+    </div>
+  </div>
+ 
   <div class="right">
     <div class="search">
       <%= form_tag :controller => 'search', :action => 'search', :method => 'get' do %>
@@ -25,7 +31,14 @@
       <% end %>
     </div>
   </td>
+
+  <td>
+    <div id="html5DIV">
+      <input type="color" id="html5colorpicker" class="form-control" value="#ff0000">
+    </div>
+  </td>
 </table>
+
 
 <div id="new-cartoon">
   <%= form_for(@cartoon) do |f| %>
@@ -35,15 +48,28 @@
   <% end %>
 </div>
 
-<div id="overlay-base">
-  <div id="overlay-main">
-    <ul id="overlay-buttons">
-      <li><button id="close-overlay">×</button></li>
-    </ul>
+<div class="modal-base" id="search-modal-base">
+  <div class="modal-main" id="search-modal-main">
+    <button id="close-modal">×</button>
 
     <label><h2>Choose Your Favorite!</h2></label>
     <div id="results-div">
-      <%#= render 'search/create' if @results %>
     </div>
+  </div>
+</div>
+
+<div class="modal-base" id="about-modal-base">
+  <div class="modal-main" id="about-modal-main">
+    <button id="close-modal">×</button>
+
+    <label><h2>About</h2></label>
+    <p></p>
+  </div>
+</div>
+
+
+<div id="footer">
+  <div class="center">
+    Made with <3 by <a href="http://people.flatironschool.com/profiles/jennifer-sardina">Jennifer Sardina</a>
   </div>
 </div>
