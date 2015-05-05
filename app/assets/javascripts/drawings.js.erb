@@ -32,6 +32,10 @@ function clearCanvas(){
   context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
+function removeImage(){
+  imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+}
+
 function erasing(){
   context.globalCompositeOperation = "destination-out";
   $("#canvas").attr("class", "erasing");
@@ -50,11 +54,11 @@ function setUpEnvironment(){
   setCanvas();
   $("#tips").on("click", chooseTip);
   $("#colors").on("click", chooseColor);
-  // $("#all-cartoons").on("click", chooseCartoon);
   $("#canvas").on("mousedown", mouseDown);
-  $("#clear").on("click", clearCanvas);
+  $("#start-over").on("click", clearCanvas);
   $("#eraser").on("click", erasing);
   $("#hide-image").on("click", hideImage);
+  $("#remove-image").on("click", removeImage);
 
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
@@ -94,7 +98,7 @@ function setUpEnvironment(){
     eraserDiv.setAttribute("id", "eraser-div");
 
     var clearCanvas = document.createElement("button");
-    clearCanvas.setAttribute("id", "clear");
+    clearCanvas.setAttribute("id", "start-over");
     clearCanvas.setAttribute("style", "border-radius:25%")
     clearCanvas.innerHTML = "Start Over";
 
@@ -102,13 +106,13 @@ function setUpEnvironment(){
     eraser.setAttribute("id", "eraser");
     eraser.setAttribute("style", "background: url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/64/Actions-draw-eraser-icon.png) no-repeat center;height:50px;width:50px");
 
-    var hideImage = document.createElement("button");
-    hideImage.setAttribute("id", "hide-image");
-    hideImage.innerHTML = "Done!";
+    var removeImage = document.createElement("button");
+    removeImage.setAttribute("id", "remove-image");
+    removeImage.innerHTML = "Remove Image";
 
-    eraserDiv.appendChild(clearCanvas);
     eraserDiv.appendChild(eraser);
-    eraserDiv.appendChild(hideImage);
+    eraserDiv.appendChild(clearCanvas);
+    eraserDiv.appendChild(removeImage);
     tray.appendChild(eraserDiv);
 
     // END TRAY COMPONENTS

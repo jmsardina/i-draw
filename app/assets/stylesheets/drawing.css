@@ -147,6 +147,8 @@ button#close-modal {
 
 label {
   font-family: comic sans MS;
+  padding-top: 3%;
+  padding left: 5%;
 }
 
 #footer {
@@ -169,3 +171,7 @@ label {
   cursor: pointer;
 }
 
+.modal-text {
+  padding-left: 5%;
+  padding-right: 5%;
+}
