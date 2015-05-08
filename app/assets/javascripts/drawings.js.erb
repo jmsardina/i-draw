@@ -46,25 +46,15 @@ function setUpEnvironment(){
     tipsDiv.setAttribute("id", "tips");
     tray.appendChild(tipsDiv);
 
-    var eraserDiv = document.createElement("div");
-    eraserDiv.setAttribute("id", "eraser-div");
-
-    var clearCanvas = document.createElement("button");
-    clearCanvas.setAttribute("id", "start-over");
-    clearCanvas.innerHTML = "Erase Everything";
+    var toolDiv = document.createElement("div");
+    toolDiv.setAttribute("id", "eraser-div");
 
     var eraser = document.createElement("div");
     eraser.setAttribute("id", "eraser");
     eraser.setAttribute("style", "background: url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/64/Actions-draw-eraser-icon.png) no-repeat center;height:50px;width:50px");
 
-    var removeImage = document.createElement("button");
-    removeImage.setAttribute("id", "remove-image");
-    removeImage.innerHTML = "Remove Image";
-
-    eraserDiv.appendChild(eraser);
-    eraserDiv.appendChild(clearCanvas);
-    eraserDiv.appendChild(removeImage);
-    tray.appendChild(eraserDiv);
+    toolDiv.appendChild(eraser);
+    tray.appendChild(toolDiv);
 
     // END TRAY COMPONENTS
 
@@ -133,11 +123,9 @@ function listenOnSelections(){
     $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
     function chooseCartoon<%= cartoon.id %>(){
       imageHolderContext.globalAlpha = 0.3;
-debugger
       var image = this;
       imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-      imageHolderContext.drawImage(image, canvas.width/25, 15, canvas.width/4, canvas.height/4);
-      context.globalAlpha = 1;
+      imageHolderContext.drawImage(image, canvas.width/25, 0, canvas.width/4, canvas.height/3.5);
       $(".modal-base").hide();
     }
   <% end %>

@@ -91,7 +91,7 @@
 
 div#cartoons-header {
   margin-top: -120px;
-  margin-left: 15px;
+  margin-left: 80px;
 }
 
 #all-cartoons {
@@ -183,9 +183,18 @@ label {
 }
 
 #start-over {
-  margin: auto;
-  border-radius: 33%;
-  margin-top:5px;
+  margin-top:-320px;
+  cursor: pointer;
+  font-size: 40px;
+  color: red;
+}
+
+#remove-image {
+  cursor:pointer;
+  background:yellow;
+  border: 1px dashed;
+  font-family: comic sans ms;
+  font-size: 20px;
 }
 
 .cartoon {
