@@ -1,0 +1,3 @@
+<% @results.try(:each) do |result| %>
+  <%= image_tag result.image_url, class: "cartoon cartoon-#{ result.id }" %>
+<% end %>

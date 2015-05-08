@@ -2,65 +2,16 @@ $(function(){
   setUpEnvironment();
   var paint;
   mouseCoordinates = new Array();
-  $(".modal-base").hide();
-  $(".search").children("form").on("submit", showSearchModal);
-  $(document).on("click", "button#close-modal", hideModal);
-  chooseCartoon();
-  $("#about-modal-base").hide()
-  $("#about").on("click", showAboutModal);
-  $("#html5colorpicker").on("change", pickColor);
 });
-
-function showAboutModal(){
-  $("#about-modal-base").show()
-}
-
-function chooseCartoon(){
-  <% Cartoon.all.each do |cartoon| %>
-    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
-    function chooseCartoon<%= cartoon.id %>(){
-      imageHolderContext.globalAlpha = 0.3;
-      var image = this;
-      imageHolderContext.drawImage(image, canvas.height/4-50, 15, canvas.width/4-80, canvas.height/4);
-      context.globalAlpha = 1;
-      debugger
-      hideModal();
-    }
-  <% end %>
-}
-
-function clearCanvas(){
-  context.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function removeImage(){
-  imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function erasing(){
-  context.globalCompositeOperation = "destination-out";
-  $("#canvas").attr("class", "erasing");
-}
-
-function hideImage(){
-  var response = confirm("Are you sure?");
-  if(response){
-    var image = document.getElementById("solid-white");
-  midLayerContext.drawImage(image, 0, 0, canvas.width, canvas.height);
-  }
-}
 
 function setUpEnvironment(){
   setTray();
   setCanvas();
-  $("#tips").on("click", chooseTip);
-  $("#colors").on("click", chooseColor);
-  $("#canvas").on("mousedown", mouseDown);
-  $("#start-over").on("click", clearCanvas);
-  $("#eraser").on("click", erasing);
-  $("#hide-image").on("click", hideImage);
-  $("#remove-image").on("click", removeImage);
-
+  listenOnSelections();
+  listenOnMouse();
+  listenOnCanvasClearing();
+  setModals();
+  
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
     var imageHolder = document.createElement("canvas");
@@ -139,51 +90,80 @@ function setUpEnvironment(){
         size<%= tip %>.setAttribute("id", "size<%= tip %>");
         size<%= tip %>.setAttribute("class", "tip")
         size<%= tip %>.setAttribute("style", "background-color:black;border-radius:50%;height:<%= tip %>px;width:<%= tip %>px;display:inline-block;");
-        debugger
         tipsDiv.appendChild(size<%= tip %>);
       <% end %>
     }
   }
 }
 
-function chooseColor(){
-  <% Drawing::COLORS.each do |color| %>
-    $("#<%= color %>").on("click", <%= color %>);
-   
-    function <%= color %>(){
-      context.globalCompositeOperation = "source-over";
-      context.strokeStyle = "<%= color %>";
-      <%= color %>.setAttribute("style", "background-color:green")
+function listenOnSelections(){
+  chooseColor();
+  chooseTip();
+  chooseCartoon();
+  $("#html5colorpicker").on("change", pickColor);
+
+  function chooseColor(){
+    <% Drawing::COLORS.each do |color| %>
+      $("#<%= color %>").on("click", <%= color %>);
+     
+      function <%= color %>(){
+        context.globalCompositeOperation = "source-over";
+        context.strokeStyle = "<%= color %>";
+      }
+    <% end %>
+  }
+
+  function pickColor(){
+    context.globalCompositeOperation = "source-over"
+    context.strokeStyle = $(this).val();
+  }
+
+  function chooseTip(){
+    <% Drawing::TIPS.each do |tip| %>
+      $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
+
+      function chooseSize<%= tip %>(){
+        context.lineWidth = <%= tip %>;
+      }
+    <% end %>
+  }
+
+  function chooseCartoon(){
+  <% Cartoon.all.each do |cartoon| %>
+    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
+    function chooseCartoon<%= cartoon.id %>(){
+      imageHolderContext.globalAlpha = 0.3;
+debugger
+      var image = this;
+      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+      imageHolderContext.drawImage(image, canvas.width/25, 15, canvas.width/4, canvas.height/4);
+      context.globalAlpha = 1;
+      $(".modal-base").hide();
     }
   <% end %>
-}
-
-function chooseTip(){
-  <% Drawing::TIPS.each do |tip| %>
-    $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
-
-    function chooseSize<%= tip %>(){
-      context.lineWidth = <%= tip %>;
-    }
-  <% end %>
-}
-
-function mouseDown(e){
-  paint = true;
-  mouseCoordinates.push([e.offsetX, e.offsetY]);
-  $(this).on("mousemove", mouseMove);
-}
-
-function mouseMove(e){
-  if(paint){
-    mouseCoordinates.push([e.offsetX, e.offsetY]);
-    $(this).on("mouseup", mouseUp);
-    draw(e);
   }
 }
 
-function mouseUp(e){
-  paint = false;
+function listenOnMouse(){
+  $("#canvas").on("mousedown", mouseDown);
+
+  function mouseDown(e){
+    paint = true;
+    mouseCoordinates.push([e.offsetX, e.offsetY]);
+    $(this).on("mousemove", mouseMove);
+  }
+
+  function mouseMove(e){
+    if(paint){
+      mouseCoordinates.push([e.offsetX, e.offsetY]);
+      $(this).on("mouseup", mouseUp);
+      draw(e);
+    }
+  }
+
+  function mouseUp(e){
+    paint = false;
+  }
 }
 
 function draw(e){
@@ -198,26 +178,61 @@ function draw(e){
   }
 }
 
-function showSearchModal(e){
-  e.preventDefault();
-  var $form = $(this);
-  var href = "/search"
+function listenOnCanvasClearing(){
+  $("#eraser").on("click", erasing);
+  $("#start-over").on("click", clearCanvas);
+  $("#hide-image").on("click", hideImage);
+  $("#remove-image").on("click", removeImage);
 
-  $.ajax(href, {
-    method: "GET",
-    "data": $form.serialize(),
-    "complete": function(response){
-      $("div#results-div").html(response.responseText);
-      $("#search-modal-base").show();
+  function erasing(){
+    context.globalCompositeOperation = "destination-out";
+    $("#canvas").attr("class", "erasing");
+  }
+ 
+  function clearCanvas(){
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function hideImage(){
+    var response = confirm("Are you sure?");
+    if(response){
+      var image = document.getElementById("solid-white");
+    midLayerContext.drawImage(image, 0, 0, canvas.width, canvas.height);
     }
-  });
+  }
+
+  function removeImage(){
+    imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+  }
 }
 
-function hideModal(){
+function setModals(){
+  $("#about-modal-base").hide()
   $(".modal-base").hide();
-}
+  $(document).on("click", "button#close-modal", hideModal);
+  $("#about").on("click", showAboutModal);
+  $(".search").children("form").on("submit", showSearchModal);
+  
+  function showAboutModal(){
+    $("#about-modal-base").show()
+  }
+  
+  function showSearchModal(e){
+    e.preventDefault();
+    var $form = $(this);
+    var href = "/search"
 
-function pickColor(){
-  context.globalCompositeOperation = "source-over"
-  context.strokeStyle = $(this).val();
+    $.ajax(href, {
+      method: "GET",
+      "data": $form.serialize(),
+      "complete": function(response){
+        $("div#results-div").html(response.responseText);
+        $("#search-modal-base").show();
+      }
+    });
+  }
+
+  function hideModal(){
+    $(".modal-base").hide();
+  }
 }

@@ -7,7 +7,7 @@
  
   <div class="right">
     <div class="search">
-      <%= form_tag :controller => 'search', :action => 'search', :method => 'get' do %>
+      <%= form_tag :controller => 'search', :action => 'create', :method => 'get' do %>
         <%= text_field_tag :keyword, params[:keyword], :id => 'search-field' %>
         <%= submit_tag "Search! ", :content => nil %> 
       <% end %> 
@@ -23,10 +23,9 @@
   <td>
     <div id="cartoons-header"><h4>Choose Your Favorite</h4></div>
     <div id="all-cartoons">
-      <img id="solid-white" src="<%= asset_path('solid-white.png') %>"/ height="10px" width="10px">
       <% @cartoons.each do |cartoon| %>
         <div>
-          <%= image_tag cartoon.avatar.url(:thumb), class: "cartoon-#{cartoon.id}" %>
+          <%= image_tag cartoon.image_url, class: "cartoon cartoon-#{cartoon.id}"%>
         </div>
       <% end %>
     </div>
