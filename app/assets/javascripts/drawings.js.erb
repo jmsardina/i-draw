@@ -103,7 +103,7 @@ function listenOnSelections(){
        
         context.globalCompositeOperation = "source-over";
         context.strokeStyle = "<%= color %>";
-        $(this).attr("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px;border:5px solid;");
+        $(this).attr("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
         var newColorLetters = context.strokeStyle.split(
           '');
@@ -189,7 +189,9 @@ function listenOnCanvasClearing(){
   }
  
   function clearCanvas(){
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    if(confirm("We're about to erase your picture!")){
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
   }
 
   function hideImage(){
