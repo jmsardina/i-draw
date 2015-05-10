@@ -151,6 +151,12 @@ cartoons = {
                   
                   ],
                     
+  "Wallykazam" => [
+                  "http://www.nickjr.co.uk/create/colour/resources/canvases/characters/wallykazam-halloween.png",
+                  "http://www.nickjr.co.uk/create/colour/resources/canvases/characters/norville-colouring-sheet.png",
+                  "http://www.nickjr.co.uk/create/colour/resources/canvases/characters/libby-colouring-sheet.png",
+                  ],
+
   "Winnie The Pooh" =>[
                 
                       ],

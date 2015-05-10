@@ -37,7 +37,6 @@ function setUpEnvironment(){
     var tray = document.createElement("div");
     tray.setAttribute("id", "tray");
 
-    // START TRAY COMPONENTS
     var colorsDiv = document.createElement("div");
     colorsDiv.setAttribute("id", "colors");
     tray.appendChild(colorsDiv);
@@ -55,10 +54,8 @@ function setUpEnvironment(){
 
     toolDiv.appendChild(eraser);
     tray.appendChild(toolDiv);
-
-    // END TRAY COMPONENTS
-
     canvasDiv.appendChild(tray);
+
     colors();
     tips();
 
@@ -97,8 +94,22 @@ function listenOnSelections(){
       $("#<%= color %>").on("click", <%= color %>);
      
       function <%= color %>(){
+        var currentColorLetters = context.strokeStyle.split(
+          '');
+        currentColorLetters.shift();
+        var currentColorClass = "." + currentColorLetters.join("");
+        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+          ));
+       
         context.globalCompositeOperation = "source-over";
         context.strokeStyle = "<%= color %>";
+        $(this).attr("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px;border:5px solid;");
+
+        var newColorLetters = context.strokeStyle.split(
+          '');
+        newColorLetters.shift();
+        var newColorClass = newColorLetters.join("");
+        $(this).addClass(newColorClass);
       }
     <% end %>
   }
@@ -125,7 +136,7 @@ function listenOnSelections(){
       imageHolderContext.globalAlpha = 0.3;
       var image = this;
       imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-      imageHolderContext.drawImage(image, canvas.width/25, 0, canvas.width/4, canvas.height/3.5);
+      imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
       $(".modal-base").hide();
     }
   <% end %>
