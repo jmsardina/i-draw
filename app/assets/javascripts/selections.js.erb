@@ -1,0 +1,59 @@
+function listenOnSelections(){
+  chooseColor();
+  chooseTip();
+  chooseCartoon();
+  $("#html5colorpicker").on("change", pickColor);
+
+  function chooseColor(){
+    <% Drawing::COLORS.each do |color| %>
+      $("#<%= color %>").on("click", <%= color %>);
+     
+      function <%= color %>(){
+        var currentColorLetters = context.strokeStyle.split(
+          '');
+        currentColorLetters.shift();
+        var currentColorClass = "." + currentColorLetters.join("");
+        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+          ));
+       
+        context.globalCompositeOperation = "source-over";
+        context.strokeStyle = "<%= color %>";
+        $(this).attr("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+
+        var newColorLetters = context.strokeStyle.split(
+          '');
+        newColorLetters.shift();
+        var newColorClass = newColorLetters.join("");
+        $(this).addClass(newColorClass);
+      }
+    <% end %>
+  }
+
+  function pickColor(){
+    context.globalCompositeOperation = "source-over"
+    context.strokeStyle = $(this).val();
+  }
+
+  function chooseTip(){
+    <% Drawing::TIPS.each do |tip| %>
+      $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
+
+      function chooseSize<%= tip %>(){
+        context.lineWidth = <%= tip %>;
+      }
+    <% end %>
+  }
+
+  function chooseCartoon(){
+  <% Cartoon.all.each do |cartoon| %>
+    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
+    function chooseCartoon<%= cartoon.id %>(){
+      imageHolderContext.globalAlpha = 0.3;
+      var image = this;
+      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+      imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+      $(".modal-base").hide();
+    }
+  <% end %>
+  }
+}

@@ -4,145 +4,6 @@ $(function(){
   mouseCoordinates = new Array();
 });
 
-function setUpEnvironment(){
-  setTray();
-  setCanvas();
-  listenOnSelections();
-  listenOnMouse();
-  listenOnCanvasClearing();
-  setModals();
-  
-  function setCanvas(){
-    var canvasDiv = document.getElementById('canvasDiv');
-    var imageHolder = document.createElement("canvas");
-    imageHolder.setAttribute("id", "image-holder");
-    var midLayer = document.createElement("canvas");
-    midLayer.setAttribute("id", "mid-layer");
-
-    var canvas = document.createElement("canvas");
-    canvas.setAttribute("id", "canvas");
-    canvas.setAttribute("width", "900px");
-    canvas.setAttribute("height", "500px");
-
-    canvasDiv.appendChild(imageHolder);
-    canvasDiv.appendChild(midLayer);
-    canvasDiv.appendChild(canvas);
-    imageHolderContext = imageHolder.getContext("2d");
-    midLayerContext = midLayer.getContext("2d");
-    context = canvas.getContext("2d");
-  }
-
-  function setTray(){
-    var canvasDiv = document.getElementById("canvasDiv");
-    var tray = document.createElement("div");
-    tray.setAttribute("id", "tray");
-
-    var colorsDiv = document.createElement("div");
-    colorsDiv.setAttribute("id", "colors");
-    tray.appendChild(colorsDiv);
-
-    var tipsDiv = document.createElement("div");
-    tipsDiv.setAttribute("id", "tips");
-    tray.appendChild(tipsDiv);
-
-    var toolDiv = document.createElement("div");
-    toolDiv.setAttribute("id", "eraser-div");
-
-    var eraser = document.createElement("div");
-    eraser.setAttribute("id", "eraser");
-    eraser.setAttribute("style", "background: url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/64/Actions-draw-eraser-icon.png) no-repeat center;height:50px;width:50px");
-
-    toolDiv.appendChild(eraser);
-    tray.appendChild(toolDiv);
-    canvasDiv.appendChild(tray);
-
-    colors();
-    tips();
-
-    function colors(){
-      <% Drawing::COLORS.each do |color| %>
-        var <%= color %> = document.createElement("button");
-        <%= color %>.setAttribute("id", "<%= color %>");
-        <%= color %>.setAttribute("class", "color");
-        <%= color %>.setAttribute("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px")
-        colorsDiv.appendChild(<%= color %>);
-      <% end %>
-      var colorPicker = document.getElementById("html5DIV");
-      colorsDiv.appendChild(colorPicker);
-    }
-
-    function tips(){
-      <% Drawing::TIPS.each do |tip| %>
-        var size<%= tip %> = document.createElement("div");
-        size<%= tip %>.setAttribute("id", "size<%= tip %>");
-        size<%= tip %>.setAttribute("class", "tip")
-        size<%= tip %>.setAttribute("style", "background-color:black;border-radius:50%;height:<%= tip %>px;width:<%= tip %>px;display:inline-block;");
-        tipsDiv.appendChild(size<%= tip %>);
-      <% end %>
-    }
-  }
-}
-
-function listenOnSelections(){
-  chooseColor();
-  chooseTip();
-  chooseCartoon();
-  $("#html5colorpicker").on("change", pickColor);
-
-  function chooseColor(){
-    <% Drawing::COLORS.each do |color| %>
-      $("#<%= color %>").on("click", <%= color %>);
-     
-      function <%= color %>(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
-       
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "<%= color %>";
-        $(this).attr("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
-
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    <% end %>
-  }
-
-  function pickColor(){
-    context.globalCompositeOperation = "source-over"
-    context.strokeStyle = $(this).val();
-  }
-
-  function chooseTip(){
-    <% Drawing::TIPS.each do |tip| %>
-      $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
-
-      function chooseSize<%= tip %>(){
-        context.lineWidth = <%= tip %>;
-      }
-    <% end %>
-  }
-
-  function chooseCartoon(){
-  <% Cartoon.all.each do |cartoon| %>
-    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
-    function chooseCartoon<%= cartoon.id %>(){
-      imageHolderContext.globalAlpha = 0.3;
-      var image = this;
-      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-      imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
-      $(".modal-base").hide();
-    }
-  <% end %>
-  }
-}
-
 function listenOnMouse(){
   $("#canvas").on("mousedown", mouseDown);
 
@@ -180,7 +41,6 @@ function draw(e){
 function listenOnCanvasClearing(){
   $("#eraser").on("click", erasing);
   $("#start-over").on("click", clearCanvas);
-  $("#hide-image").on("click", hideImage);
   $("#remove-image").on("click", removeImage);
 
   function erasing(){
@@ -194,46 +54,7 @@ function listenOnCanvasClearing(){
     }
   }
 
-  function hideImage(){
-    var response = confirm("Are you sure?");
-    if(response){
-      var image = document.getElementById("solid-white");
-    midLayerContext.drawImage(image, 0, 0, canvas.width, canvas.height);
-    }
-  }
-
   function removeImage(){
     imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-  }
-}
-
-function setModals(){
-  $("#about-modal-base").hide()
-  $(".modal-base").hide();
-  $(document).on("click", "button#close-modal", hideModal);
-  $("#about").on("click", showAboutModal);
-  $(".search").children("form").on("submit", showSearchModal);
-  
-  function showAboutModal(){
-    $("#about-modal-base").show()
-  }
-  
-  function showSearchModal(e){
-    e.preventDefault();
-    var $form = $(this);
-    var href = "/search"
-
-    $.ajax(href, {
-      method: "GET",
-      "data": $form.serialize(),
-      "complete": function(response){
-        $("div#results-div").html(response.responseText);
-        $("#search-modal-base").show();
-      }
-    });
-  }
-
-  function hideModal(){
-    $(".modal-base").hide();
   }
 }
