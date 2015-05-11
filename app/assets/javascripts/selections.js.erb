@@ -36,24 +36,32 @@ function listenOnSelections(){
 
   function chooseTip(){
     <% Drawing::TIPS.each do |tip| %>
-      $("#size<%= tip %>").on("click", chooseSize<%= tip %>);
+      $("#<%= tip %>").on("click", chooseSize<%= tip %>);
 
       function chooseSize<%= tip %>(){
+        var currentTip = context.lineWidth.toString();
+        var currentTipElement = document.getElementById(currentTip);
+
+        $(currentTipElement).attr("style", "background-color:black;border-radius:50%;height:tipSizepx; width:tipSizepx; display:inline-block;".replace(/tipSize/g, $(currentTipElement).attr("id"))
+          )
+
         context.lineWidth = <%= tip %>;
+
+        $(this).attr("style", "background-color:red; border-radius:50%; height:<%= tip %>px; width:<%= tip %>px; display:inline-block;");
       }
     <% end %>
   }
 
   function chooseCartoon(){
-  <% Cartoon.all.each do |cartoon| %>
-    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
-    function chooseCartoon<%= cartoon.id %>(){
-      imageHolderContext.globalAlpha = 0.3;
-      var image = this;
-      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-      imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
-      $(".modal-base").hide();
-    }
-  <% end %>
+    <% Cartoon.all.each do |cartoon| %>
+      $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
+      function chooseCartoon<%= cartoon.id %>(){
+        imageHolderContext.globalAlpha = 0.3;
+        var image = this;
+        imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+        imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+        $(".modal-base").hide();
+      }
+    <% end %>
   }
 }

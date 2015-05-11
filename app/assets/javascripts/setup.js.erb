@@ -68,7 +68,7 @@ function setUpEnvironment(){
     function tips(){
       <% Drawing::TIPS.each do |tip| %>
         var size<%= tip %> = document.createElement("div");
-        size<%= tip %>.setAttribute("id", "size<%= tip %>");
+        size<%= tip %>.setAttribute("id", "<%= tip %>");
         size<%= tip %>.setAttribute("class", "tip")
         size<%= tip %>.setAttribute("style", "background-color:black;border-radius:50%;height:<%= tip %>px;width:<%= tip %>px;display:inline-block;");
         tipsDiv.appendChild(size<%= tip %>);
