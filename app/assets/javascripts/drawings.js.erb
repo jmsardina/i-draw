@@ -2,13 +2,31 @@ $(function(){
   setUpEnvironment();
   var paint;
   mouseCoordinates = new Array();
+  var canvas = document.getElementById("canvas");
+  var dataURL = canvas.toDataURL();
+  undoArray = [dataURL]
 });
 
 function listenOnMouse(){
   $("#canvas").on("mousedown", mouseDown);
+  $("#canvas").on("click", saveState);
+
+  function saveState(e){
+    // var canvas = document.getElementById("canvas");
+    // var dataURL = canvas.toDataURL();
+
+    // undoArray.push(dataURL);
+
+  }
 
   function mouseDown(e){
     paint = true;
+    
+    var canvas = document.getElementById("canvas");
+    var dataURL = canvas.toDataURL();
+    undoArray.push(dataURL);
+    redoArray = new Array();
+
     mouseCoordinates.push([e.offsetX, e.offsetY]);
     $(this).on("mousemove", mouseMove);
   }
@@ -42,6 +60,8 @@ function listenOnCanvasClearing(){
   $("#eraser").on("click", erasing);
   $("#start-over").on("click", clearCanvas);
   $("#remove-image").on("click", removeImage);
+  $("#js-undo").on("click", undo);
+  $("#js-redo").on("click", redo);
 
   function erasing(){
     context.globalCompositeOperation = "destination-out";
@@ -56,5 +76,32 @@ function listenOnCanvasClearing(){
 
   function removeImage(){
     imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function undo(){
+    if(undoArray.length >= 1){
+      var canvas = document.getElementById("canvas");
+      var dataURL = canvas.toDataURL();
+      redoArray.unshift(dataURL);
+      
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      var image = document.createElement("img");
+   
+      redoArray.unshift(undoArray.pop());
+      // debugger
+      image.setAttribute("src", redoArray[0]);
+      context.drawImage(image, 0, 0);
+    }
+  }
+
+  function redo(){
+    if(redoArray.length >= 1){
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      var image = document.createElement("img");
+      undoArray.push(redoArray.shift())
+
+      image.setAttribute("src", undoArray[undoArray.length-1]);
+      context.drawImage(image, 0, 0);
+    }
   }
 }
