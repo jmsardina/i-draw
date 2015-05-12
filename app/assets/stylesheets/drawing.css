@@ -185,7 +185,7 @@ label {
 #start-over {
   margin-top:-320px;
   cursor: pointer;
-  font-size: 40px;
+  font-size: 60px;
   color: red;
 }
 
@@ -195,6 +195,7 @@ label {
   border: 1px dashed;
   font-family: comic sans ms;
   font-size: 20px;
+  margin-top: 15px;
 }
 
 .cartoon {
@@ -205,12 +206,12 @@ label {
 
 #js-undo {
   cursor: pointer;
-  font-size: 20px;
-  color: red;
+  height: 50px;
+  width: auto;
 }
 
 #js-redo {
   cursor: pointer;
-  font-size: 20px;
-  color: red;
+  height: 50px;
+  width: auto;
 }
