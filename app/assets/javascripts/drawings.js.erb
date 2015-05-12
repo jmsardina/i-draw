@@ -51,13 +51,13 @@ function draw(e){
 }
 
 function listenOnCanvasClearing(){
-  $("#eraser").on("click", erasing);
   $("#start-over").on("click", clearCanvas);
   $("#remove-image").on("click", removeImage);
   $("#js-undo").on("click", undo);
   $("#js-redo").on("click", redo);
 
   function erasing(){
+    $(this).toggleClass("active");
     context.globalCompositeOperation = "destination-out";
     $("#canvas").attr("class", "erasing");
   }
@@ -83,7 +83,6 @@ function listenOnCanvasClearing(){
       var image = document.createElement("img");
    
       redoArray.unshift(undoArray.pop());
-
       image.setAttribute("src", redoArray[0]);
       context.drawImage(image, 0, 0);
     }
@@ -95,7 +94,6 @@ function listenOnCanvasClearing(){
       var image = document.createElement("img");
 
       undoArray.push(redoArray.shift())
-
       image.setAttribute("src", undoArray[undoArray.length-1]);
       context.drawImage(image, 0, 0);
     }
