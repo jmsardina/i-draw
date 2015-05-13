@@ -5,6 +5,7 @@ $(function(){
   var canvas = document.getElementById("canvas");
   var dataURL = canvas.toDataURL();
   undoArray = [dataURL]
+  $("#new-cartoon").children("form:first").on("submit", uploadNewImage);
 });
 
 function recordHistory(){
@@ -53,11 +54,11 @@ function draw(e){
 function listenOnCanvasClearing(){
   $("#start-over").on("click", clearCanvas);
   $("#remove-image").on("click", removeImage);
+  $("#eraser").on("click", erasing);
   $("#js-undo").on("click", undo);
   $("#js-redo").on("click", redo);
 
   function erasing(){
-    $(this).toggleClass("active");
     context.globalCompositeOperation = "destination-out";
     $("#canvas").attr("class", "erasing");
   }

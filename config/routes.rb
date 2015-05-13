@@ -3,4 +3,5 @@ Rails.application.routes.draw do
   post '/cartoons' => 'cartoons#create'
   get '/search' => 'search#create'
   post '/search' => 'search#create'
+  post '/' => 'cartoons#create'
 end

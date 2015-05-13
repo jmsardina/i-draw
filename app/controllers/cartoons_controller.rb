@@ -1,5 +1,6 @@
 class CartoonsController < ApplicationController
   def create
+    # binding.pry
     @cartoon = Cartoon.new(cartoon_params)
     if @cartoon.save
       respond_to do |format|
@@ -11,6 +12,6 @@ class CartoonsController < ApplicationController
 
   private
   def cartoon_params
-    params.require(:cartoon).permit(:name, :avatar)
+    params.require(:cartoon).permit(:name, :avatar, :image_url)
   end
 end

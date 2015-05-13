@@ -216,3 +216,19 @@ label {
   height: 50px;
   width: auto;
 }
+
+#save-drawing {
+  margin-top: 15px;
+  height: 50px;
+  width: auto;
+  cursor: pointer;
+}
+
+#canvasDiv-footer {
+  height: 90px;
+  width: 500px;
+}
+
+#new-cartoon {
+  margin-top: -100px;
+}

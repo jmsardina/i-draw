@@ -19,6 +19,13 @@
   <td>
     <div id="canvasDiv">
     </div>
+    <div id="new-cartoon">
+      <%= form_for(@cartoon) do |f| %>
+        <%= f.text_field :name, placeholder: "Cartoon Name" %>
+        <%= f.file_field :avatar %>
+        <%= f.submit %>
+      <% end %>
+  </div>
   </td>
 
   <td >
@@ -27,10 +34,12 @@
     <img id="js-undo" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/undo-icon.png"/>
     <img id="js-redo" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/redo-icon.png"/>
     <div id="remove-image">Done</div>
+    <img id="save-drawing" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/file-save-icon.png"/>
   </td>
 
   <td>
     <div id="cartoons-header"><h4>Choose Your Favorite</h4></div>
+    <span id="new-upload"></span>
     <div id="all-cartoons">
       <% @cartoons.each do |cartoon| %>
         <div>
