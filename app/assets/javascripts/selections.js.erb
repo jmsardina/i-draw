@@ -2,6 +2,7 @@ function listenOnSelections(){
   chooseColor();
   chooseTip();
   chooseCartoon();
+  chooseProfile();
   $("#html5colorpicker").on("change", pickColor);
 
   function chooseColor(){
@@ -56,12 +57,29 @@ function listenOnSelections(){
     <% Cartoon.all.each do |cartoon| %>
       $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
       function chooseCartoon<%= cartoon.id %>(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("coloring")){
+          imageHolderContext.globalAlpha = 1;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
       }
     <% end %>
+  }
+
+  function chooseProfile(){
+    $("#coloring").on("click", function(){
+      $("#profile").removeClass();
+      $("#profile").addClass("coloring");
+    })
+
+    $("#tracing").on("click", function(){
+      $("#profile").removeClass();
+      $("#profile").addClass("tracing");
+    })
   }
 }

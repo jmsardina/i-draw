@@ -71,6 +71,9 @@ function listenOnCanvasClearing(){
 
   function removeImage(){
     imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+    if($("#profile").hasClass("coloring")){
+      context.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
+    }
   }
 
   function undo(){
