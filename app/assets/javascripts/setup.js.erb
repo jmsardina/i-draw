@@ -5,7 +5,8 @@ function setUpEnvironment(){
   listenOnMouse();
   listenOnCanvasClearing();
   setModals();
-  drop();
+  listenForImageUpload();
+  // drop();
   
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
@@ -51,10 +52,10 @@ function setUpEnvironment(){
     tray.appendChild(toolDiv);
     canvasDiv.appendChild(tray);
 
-    colors();
-    tips();
+    setColors();
+    setTips();
 
-    function colors(){
+    function setColors(){
       <% Drawing::COLORS.each do |color| %>
         var <%= color %> = document.createElement("button");
         <%= color %>.setAttribute("id", "<%= color %>");
@@ -66,7 +67,7 @@ function setUpEnvironment(){
       colorsDiv.appendChild(colorPicker);
     }
 
-    function tips(){
+    function setTips(){
       <% Drawing::TIPS.each do |tip| %>
         var size<%= tip %> = document.createElement("div");
         size<%= tip %>.setAttribute("id", "<%= tip %>");

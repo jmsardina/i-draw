@@ -16,56 +16,55 @@
 </div>
 
 <table>
-  <td>
-    <div id="canvasDiv">
-    </div>
-    <div id="profile">
-      <div id="coloring">Color</div>
-      <div id="tracing">Trace</div>
-    </div>
-    <!-- <div id="new-cartoon">
-      <%#= form_for(@cartoon) do |f| %>
-        <%#= f.text_field :name, placeholder: "Cartoon Name" %>
-        <%#= f.file_field :avatar %>
-        <%#= f.submit %>
-      <%# end %>
-    </div> -->
-  </div>
-  </td>
+  <tr>
+    <td>
+      <div id="canvasDiv"></div>
+      <!-- <div id="new-cartoon">
+        <%#= form_for(@cartoon) do |f| %>
+          <%#= f.text_field :name, placeholder: "Cartoon Name" %>
+          <%#= f.file_field :avatar %>
+          <%#= f.submit %>
+        <%# end %>
+      </div> -->
+    </td>
 
-  <td >
-    <div id="start-over"><strong>×</strong></div>
-    <!-- <div id="js-undo"></div> -->
-    <img id="js-undo" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/undo-icon.png"/>
-    <img id="js-redo" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/redo-icon.png"/>
-    <div id="remove-image">Done</div>
-    <img id="save-drawing" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/file-save-icon.png"/>
-  </td>
+    <td >
+      <div id="start-over"><strong>×</strong></div>
+      <!-- <div id="js-undo"></div> -->
+      <img id="js-undo" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/undo-icon.png"/>
+      <img id="js-redo" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/redo-icon.png"/>
+      <div class="switch-holder">
+        <div class="light-switch"></div>
+      </div>
+      <div id="remove-image">Done</div>
+      <img id="save-drawing" src="http://icons.iconarchive.com/icons/everaldo/kids-icons/128/file-save-icon.png"/>
+    </td>
 
-  <td>
-    <div id="cartoons-header"><h4>Choose Your Favorite</h4></div>
-    <span id="new-upload"></span>
-    <div id="all-cartoons">
-      <% @cartoons.each do |cartoon| %>
-        <div>
-          <%= image_tag cartoon.image_url, class: "cartoon cartoon-#{cartoon.id}"%>
-        </div>
-      <% end %>
-    </div>
-  </td>
+    <td>
+      <div id="cartoons-header"><h4>Choose Your Favorite</h4></div>
+      <span id="new-upload"></span>
+      <div id="all-cartoons">
+        <% @cartoons.each do |cartoon| %>
+          <div>
+            <%= image_tag cartoon.image_url, class: "cartoon cartoon-#{cartoon.id}"%>
+          </div>
+        <% end %>
+      </div>
+    </td>
 
-  <td>
-    <div id="html5DIV">
-      <input type="color" id="html5colorpicker" class="form-control" value="#ff0000">
-    </div>
-  </td>
+    <td>
+      <div id="html5DIV">
+        <input type="color" id="html5colorpicker" class="form-control" value="#ff0000">
+      </div>
+    </td>
+  </tr>
 </table>
 
 <div class="modal-base" id="search-modal-base">
   <div class="modal-main" id="search-modal-main">
     <button id="close-modal">×</button>
 
-    <label><h2>Choose Your Favorite!</h2></label>
+    <label class="modal-label"><h2>Choose Your Favorite!</h2></label>
     <div id="results-div">
     </div>
   </div>
@@ -75,8 +74,29 @@
   <div class="modal-main" id="about-modal-main">
     <button id="close-modal">×</button>
 
-    <label><h2>About</h2></label>
+    <label class="modal-label"><h2>About</h2></label>
     <h4 class="modal-text">iDraw allows you to draw your favorite cartoon character by tracing over it.</h4>
+  </div>
+</div>
+
+<div class="modal-main" id="profile-modal">
+  <button id="close-modal">×</button>
+
+  <!-- <label class="modal-label"><h2>Choose Your Profile!</h2></label> -->
+  <div id="profile">
+    <table>
+      <tr>
+        <td id="coloring" class="modal-text">
+          <img class="example-profile" src="<%= asset_path('color.png') %>">
+          <h3 class="profile-text">COLORING</h3>
+        </td>
+        <td></td>
+        <td id="tracing" class="modal-text">
+          <img class="example-profile"src="<%= asset_path('trace.png') %>" height="300px" width="300px">
+          <h3 class="profile-text">TRACING</h3>
+        </td>
+      </tr>
+    </table>
   </div>
 </div>
 

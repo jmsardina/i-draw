@@ -1,0 +1,106 @@
+#header-div{
+  position:fixed;
+  padding-left: 0;
+  text-align: center;
+  background: green;
+  box-shadow: 2px 2px 5px 2px rgba(0,0,0,.35);
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  opacity: 1;
+  z-index: 100;
+}
+
+#header-div div.right {
+  width: 20%;
+  max-width: 300px;
+  margin-top: 8px;
+  position: relative;
+  float: right;
+}
+
+#header-div div.left {
+  width: 20%;
+  max-width: 300px;
+  margin-top: -15px;
+  position: relative;
+  float: left;
+  font-family: comic sans ms;
+}
+
+#canvasDiv {
+  height:600px;
+  width: 1000px;
+  border: 1px;
+  margin-left: 20px;
+  display: inline-block;
+}
+
+#tray {
+  height:500px;
+  width:103px;
+  border: 1px solid;
+  padding: 0;
+  z-index: 2;
+  display: inline-block;
+}
+
+#image-holder {
+  width: 900px;
+  height: 500px;
+  border:1px solid;
+  margin:auto;
+  z-index:30;
+  pointer-events: none;
+  position:absolute;
+}
+
+#mid-layer {
+  width: 900px;
+  height: 500px;
+  border:1px solid;
+  margin:auto;
+  z-index:15;
+  position:absolute;
+}
+
+#canvas .erasing {
+  cursor: url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/48/Actions-draw-eraser-icon.png), auto;
+}
+
+#canvas {
+  cursor: url(http://cur.cursors-4u.net/others/oth-7/oth697.cur), auto;
+  width: 900px;
+  height: 500px;
+  border: 1px solid;
+  margin:auto;
+  z-index:20;
+  position:absolute;
+}
+
+#all-cartoons {
+  height: 460px;
+  overflow: scroll;
+  margin-left: 15px;
+  text-align: center;
+  cursor: pointer;
+  border: 1px;
+}
+
+#footer {
+  position:fixed;
+  padding-left: 0;
+  text-align: center;
+  background: green;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  opacity: 1;
+  z-index: 100;
+}

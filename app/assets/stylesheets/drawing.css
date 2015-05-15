@@ -1,86 +1,3 @@
-#header-div{
-  position:fixed;
-  padding-left: 0;
-  text-align: center;
-  background: green;
-  box-shadow: 2px 2px 5px 2px rgba(0,0,0,.35);
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  opacity: 1;
-  z-index: 100;
-}
-
-#header-div div.right {
-  width: 20%;
-  max-width: 300px;
-  margin-top: 8px;
-  position: relative;
-  float: right;
-}
-
-#header-div div.left {
-  width: 20%;
-  max-width: 300px;
-  margin-top: -15px;
-  position: relative;
-  float: left;
-  font-family: comic sans ms;
-}
-
-#canvasDiv {
-  height:600px;
-  width: 1000px;
-  border: 1px;
-  margin-left: 20px;
-  display: inline-block;
-}
-
-#tray {
-  height:500px;
-  width:103px;
-  border: 1px solid;
-  padding: 0;
-  z-index: 2;
-  display: inline-block;
-}
-
-#image-holder {
-  width: 900px;
-  height: 500px;
-  border:1px solid;
-  margin:auto;
-  z-index:30;
-  pointer-events: none;
-  position:absolute;
-}
-
-#mid-layer {
-  width: 900px;
-  height: 500px;
-  border:1px solid;
-  margin:auto;
-  z-index:15;
-  position:absolute;
-}
-
-#canvas .erasing {
-  cursor: url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/48/Actions-draw-eraser-icon.png), auto;
-}
-
-#canvas {
-  cursor: url(http://cur.cursors-4u.net/others/oth-7/oth697.cur), auto;
-  width: 900px;
-  height: 500px;
-  border: 1px solid;
-  margin:auto;
-  z-index:20;
-  position:absolute;
-}
-
 .tip {
   margin: 5px;
   cursor: pointer;
@@ -95,15 +12,6 @@ div#cartoons-header {
   margin-left: 80px;
 }
 
-#all-cartoons {
-  height: 460px;
-  overflow: scroll;
-  margin-left: 15px;
-  text-align: center;
-  cursor: pointer;
-  border: 1px;
-}
-
 #new-cartoon {
   margin-top: -100px;
 }
@@ -111,93 +19,6 @@ div#cartoons-header {
 #eraser {
   cursor: pointer;
   margin: auto;
-}
-
-.modal-base {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  margin: auto;
-  z-index: 999;
-  background: rgba(0,0,0,.7);
-  padding-top: 50%;
-}
-
-.modal-main {
-  width: 50%;
-  height: 50%;
-  background:white; 
-  position:relative; 
-  position:fixed; 
-  margin:auto; 
-  overflow:scroll; 
-  left:20%; 
-  z-index:1000; 
-  bottom:25%; 
-  border-radius:25px;
-}
-
-button#close-modal {
-  float:right; 
-  position:fixed;
-  display: block;
-  list-style-type: none;
-}
-
-#search-results {
-  padding-top:30px;
-}
-
-label {
-  font-family: comic sans MS;
-  padding-top: 3%;
-  padding-left: 5%;
-}
-
-#footer {
-  position:fixed;
-  padding-left: 0;
-  text-align: center;
-  background: green;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  opacity: 1;
-  z-index: 100;
-}
-
-#about:hover {
-  color: red;
-  cursor: pointer;
-}
-
-.modal-text {
-  padding-left: 5%;
-  padding-right: 5%;
-}
-
-#start-over {
-  margin-top:-320px;
-  cursor: pointer;
-  font-size: 60px;
-  color: red;
-}
-
-#remove-image {
-  cursor:pointer;
-  background:yellow;
-  border: 1px dashed;
-  font-family: comic sans ms;
-  font-size: 20px;
-  margin-top: 15px;
-  text-align: center;
 }
 
 .cartoon {
@@ -210,6 +31,23 @@ label {
   cursor: pointer;
   height: 50px;
   width: auto;
+}
+
+#remove-image {
+  cursor:pointer;
+  background:yellow;
+  border: 1px dashed;
+  font-family: comic sans ms;
+  font-size: 20px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+#start-over {
+  margin-top:-320px;
+  cursor: pointer;
+  font-size: 60px;
+  color: red;
 }
 
 #js-redo {
@@ -225,15 +63,33 @@ label {
   cursor: pointer;
 }
 
-#canvasDiv-footer {
-  height: 90px;
-  width: 500px;
-}
-
 #new-cartoon {
   margin-top: -100px;
 }
 
 #profile {
   margin-top: -100px;
+}
+
+.switch-holder {
+  height: 25px;
+  width: 50px;
+  border-radius: 35%;
+  background-color: green;
+}
+
+.light-switch {
+  height: 25px;
+  width: 25px;
+  background-color: gray;
+  border-radius: 50%;
+  margin-left: 25px;
+}
+
+.switch-on {
+  background-color: red;
+}
+
+.js-off {
+  margin-left: 0px;
 }

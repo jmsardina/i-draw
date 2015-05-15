@@ -1,18 +1,14 @@
 $(function(){
   setUpEnvironment();
+  setVariables();
+});
+
+function setVariables(){
   var paint;
   mouseCoordinates = new Array();
   var canvas = document.getElementById("canvas");
   var dataURL = canvas.toDataURL();
   undoArray = [dataURL]
-  $("#new-cartoon").children("form:first").on("submit", uploadNewImage);
-});
-
-function recordHistory(){
-  var canvas = document.getElementById("canvas");
-  var dataURL = canvas.toDataURL();
-  undoArray.push(dataURL);
-  redoArray = new Array();
 }
 
 function listenOnMouse(){
@@ -36,6 +32,11 @@ function listenOnMouse(){
 
   function mouseUp(e){
     paint = false;
+    context.beginPath();
+    context.arc(e.offsetX, e.offsetY, context.lineWidth/2, 0, Math.PI*2, true);
+    context.closePath();
+    context.fillStyle = context.strokeStyle
+    context.fill();
   }
 }
 
@@ -49,6 +50,13 @@ function draw(e){
     context.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1])
     context.stroke();
   }
+}
+
+function recordHistory(){
+  var canvas = document.getElementById("canvas");
+  var dataURL = canvas.toDataURL();
+  undoArray.push(dataURL);
+  redoArray = new Array();
 }
 
 function listenOnCanvasClearing(){
@@ -70,9 +78,11 @@ function listenOnCanvasClearing(){
   }
 
   function removeImage(){
-    imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-    if($("#profile").hasClass("coloring")){
-      context.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
+    if(confirm("Are you sure you're done?")){
+      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+      if($("#profile").hasClass("coloring")){
+        context.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
+      }
     }
   }
 
