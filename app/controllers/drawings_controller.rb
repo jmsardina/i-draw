@@ -2,7 +2,7 @@ class DrawingsController < ApplicationController
 
   def index
     @cartoon = Cartoon.new
-    @cartoons = Cartoon.all
+    @cartoons = Cartoon.all.shuffle
 
     if @results
       respond_to do |format|

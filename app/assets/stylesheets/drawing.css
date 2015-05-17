@@ -29,7 +29,7 @@ div#cartoons-header {
 
 #js-undo {
   cursor: pointer;
-  height: 50px;
+  height: 40px;
   width: auto;
 }
 
@@ -44,7 +44,7 @@ div#cartoons-header {
 }
 
 #start-over {
-  margin-top:-320px;
+  margin-top:-280px;
   cursor: pointer;
   font-size: 60px;
   color: red;
@@ -52,8 +52,9 @@ div#cartoons-header {
 
 #js-redo {
   cursor: pointer;
-  height: 50px;
+  height: 40px;
   width: auto;
+  margin-bottom: 15px;
 }
 
 #save-drawing {
@@ -75,7 +76,7 @@ div#cartoons-header {
   height: 25px;
   width: 50px;
   border-radius: 35%;
-  background-color: green;
+  background-color: red;
 }
 
 .light-switch {
@@ -87,7 +88,7 @@ div#cartoons-header {
 }
 
 .switch-on {
-  background-color: red;
+  background-color: green;
 }
 
 .js-off {

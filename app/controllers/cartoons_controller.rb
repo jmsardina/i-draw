@@ -1,6 +1,5 @@
 class CartoonsController < ApplicationController
   def create
-    binding.pry
     @cartoon = Cartoon.new(cartoon_params)
     if @cartoon.save
       respond_to do |format|

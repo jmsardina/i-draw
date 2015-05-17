@@ -62,13 +62,15 @@ function listenOnSelections(){
     <% Cartoon.all.each do |cartoon| %>
       $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
       function chooseCartoon<%= cartoon.id %>(){
-        if($("#profile").hasClass("coloring")){
+        if($("#profile").hasClass("color")){
           imageHolderContext.globalAlpha = 1;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
         var image = this;
         currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -77,17 +79,35 @@ function listenOnSelections(){
   }
 
   function chooseProfile(){
-    $("#coloring").on("click", function(){
+    $(document).on("click", "#color", function(){
       $("#profile").removeClass();
-      $("#profile").addClass("coloring");
-      $("#profile-modal").hide()
+      $("#profile").addClass("color");
+      $("#profile-modal").hide();
+      $("#profile-holder").html("<img id='trace' class='profile-thumb' src='<%= asset_path('trace.png') %>'/>");
+      adjustImageOpacity(1);
     })
 
-    $("#tracing").on("click", function(){
+    $(document).on("click", "#trace", function(){
       $("#profile").removeClass();
-      $("#profile").addClass("tracing");
-      $("#profile-modal").hide()
+      $("#profile").addClass("trace");
+      $("#profile-modal").hide();
+      $("#profile-holder").html("<img id='color' class='profile-thumb' src='<%= asset_path('color.png') %>'/>");
+      adjustImageOpacity(0.3);
     })
+  }
+
+  // function adjustProfile(profile){
+  //   $("#profile").removeClass();
+  //   $("#profile").addClass("selection".replace("profile", profile));
+  //   $("#profile-modal").hide();
+  //   var adjustedHtml = "<img id='selection' class='profile-thumb' src='<%= asset_path('selection.png') %>'/>".replace(/selection/g, profile);
+  //   $("#profile-holder").html(adjustedHtml);
+  // }
+
+  function adjustImageOpacity(globalAlpha){
+    imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+    imageHolderContext.globalAlpha = globalAlpha;
+    imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
   }
 
   function toggleCanvasImage(){
@@ -96,7 +116,7 @@ function listenOnSelections(){
     function turnSwitch(){
       $(this).parents("div:first").toggleClass("switch-on");
       $(this).toggleClass("js-off");
-      if($(this).hasClass("switch-on")){
+      if($(this).parents("div:first").hasClass("switch-on")){
         imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5)
       } else {
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
