@@ -90,6 +90,22 @@
   border: 1px;
 }
 
+.profile-thumb {
+  cursor: pointer;
+  border: 1px solid;
+  margin-top: 10%;
+  margin-bottom: 10%;
+  width: 75%;
+  display: inline-block;
+  height: auto;
+  opacity: .5;
+  border-radius: 25%;
+}
+
+.profile-thumb:hover {
+  opacity: 1;
+}
+
 #footer {
   position:fixed;
   padding-left: 0;

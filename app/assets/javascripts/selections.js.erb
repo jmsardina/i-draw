@@ -84,6 +84,10 @@ function listenOnSelections(){
       $("#profile").addClass("color");
       $("#profile-modal").hide();
       $("#profile-holder").html("<img id='trace' class='profile-thumb' src='<%= asset_path('trace.png') %>'/>");
+
+      $(".switch-holder").hide();
+      $("#done-div").html("<div id='remove-image'>Done</div>");
+
       adjustImageOpacity(1);
     })
 
@@ -92,6 +96,10 @@ function listenOnSelections(){
       $("#profile").addClass("trace");
       $("#profile-modal").hide();
       $("#profile-holder").html("<img id='color' class='profile-thumb' src='<%= asset_path('color.png') %>'/>");
+
+      $("#remove-image").hide();
+      $("#switch-div").html("<div class='switch-holder'><div class='light-switch js-off'></div></div>");
+
       adjustImageOpacity(0.3);
     })
   }
@@ -111,11 +119,12 @@ function listenOnSelections(){
   }
 
   function toggleCanvasImage(){
-    $(".light-switch").on("click", turnSwitch);
+    $(document).on("click", ".light-switch", turnSwitch);
 
     function turnSwitch(){
       $(this).parents("div:first").toggleClass("switch-on");
       $(this).toggleClass("js-off");
+      
       if($(this).parents("div:first").hasClass("switch-on")){
         imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5)
       } else {

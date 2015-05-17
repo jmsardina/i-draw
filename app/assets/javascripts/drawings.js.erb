@@ -63,7 +63,7 @@ function recordHistory(){
 
 function listenOnCanvasClearing(){
   $("#start-over").on("click", clearCanvas);
-  $("#remove-image").on("click", completeDrawing);
+  $(document).on("click", "#remove-image", completeDrawing);
   $("#eraser").on("click", erasing);
   $("#js-undo").on("click", undo);
   $("#js-redo").on("click", redo);
@@ -82,7 +82,7 @@ function listenOnCanvasClearing(){
   function completeDrawing(){
     if(confirm("Are you sure you're done?")){
       imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-      if($("#profile").hasClass("coloring")){
+      if($("#profile").hasClass("color")){
         context.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
       }
     }

@@ -16,7 +16,6 @@ function listenForImageUpload(){
       "complete": function(response){
         var image = $(response.responseText)[0];
         debugger
-        alert(image)
         // imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         // imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
       }
