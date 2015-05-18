@@ -12827,19 +12827,15 @@ return jQuery;
 
 $(function(){
   setUpEnvironment();
+  setVariables();
+});
+
+function setVariables(){
   var paint;
   mouseCoordinates = new Array();
   var canvas = document.getElementById("canvas");
   var dataURL = canvas.toDataURL();
   undoArray = [dataURL]
-  $("#new-cartoon").children("form:first").on("submit", uploadNewImage);
-});
-
-function recordHistory(){
-  var canvas = document.getElementById("canvas");
-  var dataURL = canvas.toDataURL();
-  undoArray.push(dataURL);
-  redoArray = new Array();
 }
 
 function listenOnMouse(){
@@ -12863,6 +12859,12 @@ function listenOnMouse(){
 
   function mouseUp(e){
     paint = false;
+    context.beginPath();
+    context.arc(e.offsetX, e.offsetY, context.lineWidth/2, 0, Math.PI*2, true);
+    context.closePath();
+    context.fillStyle = context.strokeStyle
+    context.fill();
+    mouseCoordinates = new Array();
   }
 }
 
@@ -12872,15 +12874,28 @@ function draw(e){
     context.lineJoin = "round";
     context.lineCap = "round";
 
-    context.moveTo(mouseCoordinates[mouseCoordinates.length-2][0], mouseCoordinates[mouseCoordinates.length-2][1])
-    context.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1])
+    context.moveTo(mouseCoordinates[mouseCoordinates.length-2][0], mouseCoordinates[mouseCoordinates.length-2][1]);
+    context.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1]);
+    mouseCoordinates.splice(-2, 1);
     context.stroke();
   }
 }
 
+function recordHistory(){
+  var canvas = document.getElementById("canvas");
+  var dataURL = canvas.toDataURL();
+  undoArray.push(dataURL);
+
+  if(undoArray.length >= 4){
+    undoArray.splice(0, 1);
+  }
+
+  redoArray = new Array();
+}
+
 function listenOnCanvasClearing(){
   $("#start-over").on("click", clearCanvas);
-  $("#remove-image").on("click", removeImage);
+  $(document).on("click", "#remove-image", completeDrawing);
   $("#eraser").on("click", erasing);
   $("#js-undo").on("click", undo);
   $("#js-redo").on("click", redo);
@@ -12896,8 +12911,13 @@ function listenOnCanvasClearing(){
     }
   }
 
-  function removeImage(){
-    imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+  function completeDrawing(){
+    if(confirm("Are you sure you're done?")){
+      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+      if($("#profile").hasClass("color")){
+        context.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
+      }
+    }
   }
 
   function undo(){
@@ -12928,60 +12948,72 @@ function listenOnCanvasClearing(){
   }
 }
 ;
-function drop(){
-  $("#upload")
-    .bind("dragover", false)
-    .bind("dragenter", false)
-    .bind("drop", function(e) {
-      this.value = e.originalEvent.dataTransfer.getData("text") ||
-        e.originalEvent.dataTransfer.getData("text/plain");
-    return false;
-  });
-}
+function listenForImageUpload(){
+  $("#new-cartoon").children("form:first").on("submit", uploadNewImage);
 
-function uploadNewImage(e){
-  e.preventDefault();
-  var $form = $(this);
-  var href = $form.attr("action");
-// debugger
-  $.ajax(href, {
-    method: "POST",
-    "data": $form.serialize(),
-    "complete": function(response){
-      debugger
-      $("#new-upload").html(response.responseText);
-    }
-  })
+  function uploadNewImage(e){
+    e.preventDefault();
+    var $form = $(this);
+    var href = $form.attr("action");
+    var formData = new FormData($(this)[0]);
+
+    $.ajax(href, {
+      method: "POST",
+      "data": formData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      "complete": function(response){
+        var image = $(response.responseText)[0];
+        debugger
+        // imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+        // imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+      }
+    });
+  }
 }
 ;
 function setModals(){
-  $("#about-modal-base").hide()
-  $(".modal-base").hide();
+  setSearchModal();
+  setAboutModal();
+  setProfileModal();
   $(document).on("click", "button#close-modal", hideModal);
-  $("#about").on("click", showAboutModal);
-  $(".search").children("form").on("submit", showSearchModal);
   
-  function showAboutModal(){
-    $("#about-modal-base").show()
+  function setProfileModal(){
+    $("#profile-modal").hide();
+    $("#profile-modal").show();
+  }
+
+  function setAboutModal(){
+    $("#about-modal-base").hide()
+    $("#about").on("click", function(){ 
+      $("#about-modal-base").show()
+    });
   }
   
-  function showSearchModal(e){
-    e.preventDefault();
-    var $form = $(this);
-    var href = "/search"
+  function setSearchModal(){
+    $(".modal-base").hide();
+    $(".search").children("form:first").on("submit", showSearchModal);
 
-    $.ajax(href, {
-      method: "GET",
-      "data": $form.serialize(),
-      "complete": function(response){
-        $("div#results-div").html(response.responseText);
-        $("#search-modal-base").show();
-      }
-    });
+    function showSearchModal(e){
+      e.preventDefault();
+      var $form = $(this);
+      var href = "/search"
+
+      $.ajax(href, {
+        method: "GET",
+        "data": $form.serialize(),
+        "complete": function(response){
+          $("div#results-div").html(response.responseText);
+          $("#search-modal-base").show();
+        }
+      });
+    }
   }
 
   function hideModal(){
     $(".modal-base").hide();
+    $("#profile-modal").hide();
   }
 }
 ;
@@ -12989,226 +13021,232 @@ function listenOnSelections(){
   chooseColor();
   chooseTip();
   chooseCartoon();
-  $("#html5colorpicker").on("change", pickColor);
+  chooseProfile();
+  toggleCanvasImage();
 
   function chooseColor(){
-    
-      $("#blue").on("click", blue);
-     
-      function blue(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+    $("#html5colorpicker").on("change", fromColorPicker);
+    fromButtons();
+
+    function fromButtons(){
+      
+        $("#blue").on("click", blue);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "blue";
-        $(this).attr("style", "background-color:blue;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function blue(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "blue";
+          $(this).attr("style", "background-color:blue;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#yellow").on("click", yellow);
-     
-      function yellow(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#yellow").on("click", yellow);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "yellow";
-        $(this).attr("style", "background-color:yellow;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function yellow(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "yellow";
+          $(this).attr("style", "background-color:yellow;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#red").on("click", red);
-     
-      function red(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#red").on("click", red);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "red";
-        $(this).attr("style", "background-color:red;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function red(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "red";
+          $(this).attr("style", "background-color:red;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#green").on("click", green);
-     
-      function green(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#green").on("click", green);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "green";
-        $(this).attr("style", "background-color:green;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function green(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "green";
+          $(this).attr("style", "background-color:green;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#pink").on("click", pink);
-     
-      function pink(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#pink").on("click", pink);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "pink";
-        $(this).attr("style", "background-color:pink;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function pink(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "pink";
+          $(this).attr("style", "background-color:pink;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#sienna").on("click", sienna);
-     
-      function sienna(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#sienna").on("click", sienna);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "sienna";
-        $(this).attr("style", "background-color:sienna;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function sienna(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "sienna";
+          $(this).attr("style", "background-color:sienna;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#purple").on("click", purple);
-     
-      function purple(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#purple").on("click", purple);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "purple";
-        $(this).attr("style", "background-color:purple;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function purple(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "purple";
+          $(this).attr("style", "background-color:purple;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#black").on("click", black);
-     
-      function black(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#black").on("click", black);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "black";
-        $(this).attr("style", "background-color:black;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function black(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "black";
+          $(this).attr("style", "background-color:black;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#white").on("click", white);
-     
-      function white(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#white").on("click", white);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "white";
-        $(this).attr("style", "background-color:white;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function white(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "white";
+          $(this).attr("style", "background-color:white;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-      $("#orange").on("click", orange);
-     
-      function orange(){
-        var currentColorLetters = context.strokeStyle.split(
-          '');
-        currentColorLetters.shift();
-        var currentColorClass = "." + currentColorLetters.join("");
-        $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
-          ));
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+        $("#orange").on("click", orange);
        
-        context.globalCompositeOperation = "source-over";
-        context.strokeStyle = "orange";
-        $(this).attr("style", "background-color:orange;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+        function orange(){
+          var currentColorLetters = context.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          context.globalCompositeOperation = "source-over";
+          context.strokeStyle = "orange";
+          $(this).attr("style", "background-color:orange;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
 
-        var newColorLetters = context.strokeStyle.split(
-          '');
-        newColorLetters.shift();
-        var newColorClass = newColorLetters.join("");
-        $(this).addClass(newColorClass);
-      }
-    
-  }
+          var newColorLetters = context.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      
+    }
 
-  function pickColor(){
-    context.globalCompositeOperation = "source-over"
-    context.strokeStyle = $(this).val();
-  }
+    function fromColorPicker(){
+      context.globalCompositeOperation = "source-over"
+      context.strokeStyle = $(this).val();
+    }
+  }  
 
   function chooseTip(){
     
@@ -13330,8 +13368,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-1", chooseCartoon1);
       function chooseCartoon1(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13339,8 +13384,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-2", chooseCartoon2);
       function chooseCartoon2(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13348,8 +13400,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-3", chooseCartoon3);
       function chooseCartoon3(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13357,8 +13416,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-4", chooseCartoon4);
       function chooseCartoon4(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13366,8 +13432,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-5", chooseCartoon5);
       function chooseCartoon5(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13375,8 +13448,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-6", chooseCartoon6);
       function chooseCartoon6(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13384,8 +13464,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-7", chooseCartoon7);
       function chooseCartoon7(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13393,8 +13480,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-8", chooseCartoon8);
       function chooseCartoon8(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13402,8 +13496,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-9", chooseCartoon9);
       function chooseCartoon9(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13411,8 +13512,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-10", chooseCartoon10);
       function chooseCartoon10(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13420,8 +13528,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-11", chooseCartoon11);
       function chooseCartoon11(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13429,8 +13544,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-12", chooseCartoon12);
       function chooseCartoon12(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13438,8 +13560,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-13", chooseCartoon13);
       function chooseCartoon13(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13447,8 +13576,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-14", chooseCartoon14);
       function chooseCartoon14(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13456,8 +13592,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-15", chooseCartoon15);
       function chooseCartoon15(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13465,8 +13608,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-16", chooseCartoon16);
       function chooseCartoon16(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13474,8 +13624,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-17", chooseCartoon17);
       function chooseCartoon17(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13483,8 +13640,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-18", chooseCartoon18);
       function chooseCartoon18(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13492,8 +13656,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-19", chooseCartoon19);
       function chooseCartoon19(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13501,8 +13672,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-20", chooseCartoon20);
       function chooseCartoon20(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13510,8 +13688,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-21", chooseCartoon21);
       function chooseCartoon21(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13519,8 +13704,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-22", chooseCartoon22);
       function chooseCartoon22(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13528,8 +13720,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-23", chooseCartoon23);
       function chooseCartoon23(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13537,8 +13736,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-24", chooseCartoon24);
       function chooseCartoon24(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13546,8 +13752,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-25", chooseCartoon25);
       function chooseCartoon25(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13555,8 +13768,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-26", chooseCartoon26);
       function chooseCartoon26(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13564,8 +13784,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-27", chooseCartoon27);
       function chooseCartoon27(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13573,8 +13800,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-28", chooseCartoon28);
       function chooseCartoon28(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13582,8 +13816,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-29", chooseCartoon29);
       function chooseCartoon29(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13591,8 +13832,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-30", chooseCartoon30);
       function chooseCartoon30(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13600,8 +13848,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-31", chooseCartoon31);
       function chooseCartoon31(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13609,8 +13864,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-32", chooseCartoon32);
       function chooseCartoon32(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13618,8 +13880,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-33", chooseCartoon33);
       function chooseCartoon33(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13627,8 +13896,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-34", chooseCartoon34);
       function chooseCartoon34(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13636,8 +13912,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-35", chooseCartoon35);
       function chooseCartoon35(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13645,8 +13928,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-36", chooseCartoon36);
       function chooseCartoon36(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13654,8 +13944,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-37", chooseCartoon37);
       function chooseCartoon37(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13663,8 +13960,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-38", chooseCartoon38);
       function chooseCartoon38(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13672,8 +13976,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-39", chooseCartoon39);
       function chooseCartoon39(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13681,8 +13992,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-40", chooseCartoon40);
       function chooseCartoon40(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13690,8 +14008,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-41", chooseCartoon41);
       function chooseCartoon41(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13699,8 +14024,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-42", chooseCartoon42);
       function chooseCartoon42(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13708,8 +14040,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-43", chooseCartoon43);
       function chooseCartoon43(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13717,8 +14056,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-44", chooseCartoon44);
       function chooseCartoon44(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13726,8 +14072,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-45", chooseCartoon45);
       function chooseCartoon45(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13735,8 +14088,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-46", chooseCartoon46);
       function chooseCartoon46(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13744,8 +14104,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-47", chooseCartoon47);
       function chooseCartoon47(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13753,8 +14120,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-48", chooseCartoon48);
       function chooseCartoon48(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13762,8 +14136,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-49", chooseCartoon49);
       function chooseCartoon49(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13771,8 +14152,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-50", chooseCartoon50);
       function chooseCartoon50(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13780,8 +14168,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-51", chooseCartoon51);
       function chooseCartoon51(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13789,8 +14184,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-52", chooseCartoon52);
       function chooseCartoon52(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13798,8 +14200,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-53", chooseCartoon53);
       function chooseCartoon53(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13807,8 +14216,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-54", chooseCartoon54);
       function chooseCartoon54(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13816,8 +14232,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-55", chooseCartoon55);
       function chooseCartoon55(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13825,8 +14248,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-56", chooseCartoon56);
       function chooseCartoon56(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13834,8 +14264,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-57", chooseCartoon57);
       function chooseCartoon57(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13843,8 +14280,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-58", chooseCartoon58);
       function chooseCartoon58(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13852,8 +14296,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-59", chooseCartoon59);
       function chooseCartoon59(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13861,8 +14312,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-60", chooseCartoon60);
       function chooseCartoon60(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13870,8 +14328,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-61", chooseCartoon61);
       function chooseCartoon61(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13879,8 +14344,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-62", chooseCartoon62);
       function chooseCartoon62(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13888,8 +14360,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-63", chooseCartoon63);
       function chooseCartoon63(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13897,8 +14376,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-64", chooseCartoon64);
       function chooseCartoon64(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13906,8 +14392,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-65", chooseCartoon65);
       function chooseCartoon65(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13915,8 +14408,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-66", chooseCartoon66);
       function chooseCartoon66(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13924,8 +14424,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-67", chooseCartoon67);
       function chooseCartoon67(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13933,8 +14440,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-68", chooseCartoon68);
       function chooseCartoon68(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13942,8 +14456,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-69", chooseCartoon69);
       function chooseCartoon69(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13951,8 +14472,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-70", chooseCartoon70);
       function chooseCartoon70(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13960,8 +14488,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-71", chooseCartoon71);
       function chooseCartoon71(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13969,8 +14504,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-72", chooseCartoon72);
       function chooseCartoon72(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13978,8 +14520,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-73", chooseCartoon73);
       function chooseCartoon73(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13987,8 +14536,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-74", chooseCartoon74);
       function chooseCartoon74(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -13996,8 +14552,15 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-75", chooseCartoon75);
       function chooseCartoon75(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
@@ -14005,13 +14568,94 @@ function listenOnSelections(){
     
       $(document).on("click", ".cartoon-76", chooseCartoon76);
       function chooseCartoon76(){
-        imageHolderContext.globalAlpha = 0.3;
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
         var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
         $(".modal-base").hide();
       }
     
+      $(document).on("click", ".cartoon-83", chooseCartoon83);
+      function chooseCartoon83(){
+        if($("#profile").hasClass("color")){
+          imageHolderContext.globalAlpha = .8;
+        } else {
+          imageHolderContext.globalAlpha = 0.3;
+        }
+        var image = this;
+        currentImage = image;
+        $(".light-switch").parents("div:first").addClass("switch-on");
+        $(".light-switch").removeClass("js-off");
+        imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+        imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+        $(".modal-base").hide();
+      }
+    
+  }
+
+  function chooseProfile(){
+    $(document).on("click", "#color", function(){
+      $("#profile").removeClass();
+      $("#profile").addClass("color");
+      $(".modal-background").hide();
+
+      $("#profile-holder").html("<img id='trace' class='profile-thumb' src='/assets/trace-a0b0213f6c8f9f8aed757ee4544122f8e1116a3c83ee9200a5870e75a494c763.png'/>");
+
+      $(".switch-holder").hide();
+      $("#done-div").html("<div id='remove-image'>Done</div>");
+
+      adjustImageOpacity(1);
+    })
+
+    $(document).on("click", "#trace", function(){
+      $("#profile").removeClass();
+      $("#profile").addClass("trace");
+      $(".modal-background").hide();
+
+      $("#profile-holder").html("<img id='color' class='profile-thumb' src='/assets/color-3b76828c3ed82e1dab6c7ac6863f79daaf6accb1c99afe8c36318133d60aaaef.png'/>");
+
+      $("#remove-image").hide();
+      $("#switch-div").html("<div class='switch-holder'><div class='light-switch js-off'></div></div>");
+
+      adjustImageOpacity(0.3);
+    })
+  }
+
+  // function adjustProfile(profile){
+  //   $("#profile").removeClass();
+  //   $("#profile").addClass("selection".replace("profile", profile));
+    // $(".modal-background").hide();
+  //   $("#profile-modal").hide();
+  //   var adjustedHTML = "<img id='selection' class='profile-thumb' src='/selection.png'/>".replace(/selection/g, profile);
+  //   $("#profile-holder").html(adjustedHTML);
+  // }
+
+  function adjustImageOpacity(globalAlpha){
+    imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+    imageHolderContext.globalAlpha = globalAlpha;
+    imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+  }
+
+  function toggleCanvasImage(){
+    $(document).on("click", ".switch-holder", turnSwitch);
+
+    function turnSwitch(){
+      $(this).toggleClass("switch-on");
+      $(this).children("div:first").toggleClass("js-off");
+      
+      if($(this).hasClass("switch-on")){
+        imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5)
+      } else {
+        imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
   }
 }
 ;
@@ -14022,7 +14666,8 @@ function setUpEnvironment(){
   listenOnMouse();
   listenOnCanvasClearing();
   setModals();
-  drop();
+  listenForImageUpload();
+  // drop();
   
   function setCanvas(){
     var canvasDiv = document.getElementById('canvasDiv');
@@ -14068,10 +14713,10 @@ function setUpEnvironment(){
     tray.appendChild(toolDiv);
     canvasDiv.appendChild(tray);
 
-    colors();
-    tips();
+    setColors();
+    setTips();
 
-    function colors(){
+    function setColors(){
       
         var blue = document.createElement("button");
         blue.setAttribute("id", "blue");
@@ -14137,7 +14782,7 @@ function setUpEnvironment(){
       colorsDiv.appendChild(colorPicker);
     }
 
-    function tips(){
+    function setTips(){
       
         var size1 = document.createElement("div");
         size1.setAttribute("id", "1");

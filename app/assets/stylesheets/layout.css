@@ -31,6 +31,10 @@
   font-family: comic sans ms;
 }
 
+#header-div div.left a:hover{
+  color: red;
+}
+
 #canvasDiv {
   height:600px;
   width: 1000px;

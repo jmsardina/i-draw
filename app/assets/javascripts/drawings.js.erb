@@ -58,6 +58,11 @@ function recordHistory(){
   var canvas = document.getElementById("canvas");
   var dataURL = canvas.toDataURL();
   undoArray.push(dataURL);
+
+  if(undoArray.length >= 4){
+    undoArray.splice(0, 1);
+  }
+
   redoArray = new Array();
 }
 
