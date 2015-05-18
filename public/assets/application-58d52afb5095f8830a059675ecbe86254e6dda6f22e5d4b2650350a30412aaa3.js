@@ -12864,6 +12864,7 @@ function listenOnMouse(){
     context.closePath();
     context.fillStyle = context.strokeStyle
     context.fill();
+    mouseCoordinates = new Array();
   }
 }
 
@@ -12884,12 +12885,17 @@ function recordHistory(){
   var canvas = document.getElementById("canvas");
   var dataURL = canvas.toDataURL();
   undoArray.push(dataURL);
+
+  if(undoArray.length >= 4){
+    undoArray.splice(0, 1);
+  }
+
   redoArray = new Array();
 }
 
 function listenOnCanvasClearing(){
   $("#start-over").on("click", clearCanvas);
-  $("#remove-image").on("click", completeDrawing);
+  $(document).on("click", "#remove-image", completeDrawing);
   $("#eraser").on("click", erasing);
   $("#js-undo").on("click", undo);
   $("#js-redo").on("click", redo);
@@ -12908,7 +12914,7 @@ function listenOnCanvasClearing(){
   function completeDrawing(){
     if(confirm("Are you sure you're done?")){
       imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-      if($("#profile").hasClass("coloring")){
+      if($("#profile").hasClass("color")){
         context.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
       }
     }
@@ -12942,17 +12948,6 @@ function listenOnCanvasClearing(){
   }
 }
 ;
-// function drop(){
-//   $("#upload")
-//     .bind("dragover", false)
-//     .bind("dragenter", false)
-//     .bind("drop", function(e) {
-//       this.value = e.originalEvent.dataTransfer.getData("text") ||
-//         e.originalEvent.dataTransfer.getData("text/plain");
-//     return false;
-//   });
-// }
-
 function listenForImageUpload(){
   $("#new-cartoon").children("form:first").on("submit", uploadNewImage);
 
@@ -12970,7 +12965,6 @@ function listenForImageUpload(){
       processData: false,
       "complete": function(response){
         var image = $(response.responseText)[0];
-        // $("#all-cartoons").appendChild(image);
         debugger
         // imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
         // imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
@@ -13375,7 +13369,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-1", chooseCartoon1);
       function chooseCartoon1(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13391,7 +13385,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-2", chooseCartoon2);
       function chooseCartoon2(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13407,7 +13401,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-3", chooseCartoon3);
       function chooseCartoon3(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13423,7 +13417,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-4", chooseCartoon4);
       function chooseCartoon4(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13439,7 +13433,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-5", chooseCartoon5);
       function chooseCartoon5(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13455,7 +13449,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-6", chooseCartoon6);
       function chooseCartoon6(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13471,7 +13465,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-7", chooseCartoon7);
       function chooseCartoon7(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13487,7 +13481,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-8", chooseCartoon8);
       function chooseCartoon8(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13503,7 +13497,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-9", chooseCartoon9);
       function chooseCartoon9(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13519,7 +13513,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-10", chooseCartoon10);
       function chooseCartoon10(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13535,7 +13529,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-11", chooseCartoon11);
       function chooseCartoon11(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13551,7 +13545,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-12", chooseCartoon12);
       function chooseCartoon12(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13567,7 +13561,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-13", chooseCartoon13);
       function chooseCartoon13(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13583,7 +13577,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-14", chooseCartoon14);
       function chooseCartoon14(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13599,7 +13593,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-15", chooseCartoon15);
       function chooseCartoon15(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13615,7 +13609,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-16", chooseCartoon16);
       function chooseCartoon16(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13631,7 +13625,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-17", chooseCartoon17);
       function chooseCartoon17(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13647,7 +13641,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-18", chooseCartoon18);
       function chooseCartoon18(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13663,7 +13657,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-19", chooseCartoon19);
       function chooseCartoon19(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13679,7 +13673,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-20", chooseCartoon20);
       function chooseCartoon20(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13695,7 +13689,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-21", chooseCartoon21);
       function chooseCartoon21(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13711,7 +13705,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-22", chooseCartoon22);
       function chooseCartoon22(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13727,7 +13721,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-23", chooseCartoon23);
       function chooseCartoon23(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13743,7 +13737,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-24", chooseCartoon24);
       function chooseCartoon24(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13759,7 +13753,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-25", chooseCartoon25);
       function chooseCartoon25(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13775,7 +13769,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-26", chooseCartoon26);
       function chooseCartoon26(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13791,7 +13785,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-27", chooseCartoon27);
       function chooseCartoon27(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13807,7 +13801,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-28", chooseCartoon28);
       function chooseCartoon28(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13823,7 +13817,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-29", chooseCartoon29);
       function chooseCartoon29(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13839,7 +13833,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-30", chooseCartoon30);
       function chooseCartoon30(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13855,7 +13849,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-31", chooseCartoon31);
       function chooseCartoon31(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13871,7 +13865,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-32", chooseCartoon32);
       function chooseCartoon32(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13887,7 +13881,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-33", chooseCartoon33);
       function chooseCartoon33(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13903,7 +13897,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-34", chooseCartoon34);
       function chooseCartoon34(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13919,7 +13913,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-35", chooseCartoon35);
       function chooseCartoon35(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13935,7 +13929,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-36", chooseCartoon36);
       function chooseCartoon36(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13951,7 +13945,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-37", chooseCartoon37);
       function chooseCartoon37(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13967,7 +13961,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-38", chooseCartoon38);
       function chooseCartoon38(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13983,7 +13977,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-39", chooseCartoon39);
       function chooseCartoon39(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -13999,7 +13993,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-40", chooseCartoon40);
       function chooseCartoon40(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14015,7 +14009,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-41", chooseCartoon41);
       function chooseCartoon41(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14031,7 +14025,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-42", chooseCartoon42);
       function chooseCartoon42(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14047,7 +14041,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-43", chooseCartoon43);
       function chooseCartoon43(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14063,7 +14057,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-44", chooseCartoon44);
       function chooseCartoon44(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14079,7 +14073,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-45", chooseCartoon45);
       function chooseCartoon45(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14095,7 +14089,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-46", chooseCartoon46);
       function chooseCartoon46(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14111,7 +14105,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-47", chooseCartoon47);
       function chooseCartoon47(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14127,7 +14121,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-48", chooseCartoon48);
       function chooseCartoon48(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14143,7 +14137,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-49", chooseCartoon49);
       function chooseCartoon49(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14159,7 +14153,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-50", chooseCartoon50);
       function chooseCartoon50(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14175,7 +14169,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-51", chooseCartoon51);
       function chooseCartoon51(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14191,7 +14185,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-52", chooseCartoon52);
       function chooseCartoon52(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14207,7 +14201,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-53", chooseCartoon53);
       function chooseCartoon53(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14223,7 +14217,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-54", chooseCartoon54);
       function chooseCartoon54(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14239,7 +14233,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-55", chooseCartoon55);
       function chooseCartoon55(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14255,7 +14249,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-56", chooseCartoon56);
       function chooseCartoon56(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14271,7 +14265,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-57", chooseCartoon57);
       function chooseCartoon57(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14287,7 +14281,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-58", chooseCartoon58);
       function chooseCartoon58(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14303,7 +14297,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-59", chooseCartoon59);
       function chooseCartoon59(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14319,7 +14313,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-60", chooseCartoon60);
       function chooseCartoon60(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14335,7 +14329,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-61", chooseCartoon61);
       function chooseCartoon61(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14351,7 +14345,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-62", chooseCartoon62);
       function chooseCartoon62(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14367,7 +14361,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-63", chooseCartoon63);
       function chooseCartoon63(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14383,7 +14377,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-64", chooseCartoon64);
       function chooseCartoon64(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14399,7 +14393,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-65", chooseCartoon65);
       function chooseCartoon65(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14415,7 +14409,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-66", chooseCartoon66);
       function chooseCartoon66(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14431,7 +14425,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-67", chooseCartoon67);
       function chooseCartoon67(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14447,7 +14441,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-68", chooseCartoon68);
       function chooseCartoon68(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14463,7 +14457,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-69", chooseCartoon69);
       function chooseCartoon69(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14479,7 +14473,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-70", chooseCartoon70);
       function chooseCartoon70(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14495,7 +14489,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-71", chooseCartoon71);
       function chooseCartoon71(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14511,7 +14505,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-72", chooseCartoon72);
       function chooseCartoon72(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14527,7 +14521,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-73", chooseCartoon73);
       function chooseCartoon73(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14543,7 +14537,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-74", chooseCartoon74);
       function chooseCartoon74(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14559,7 +14553,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-75", chooseCartoon75);
       function chooseCartoon75(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14575,7 +14569,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-76", chooseCartoon76);
       function chooseCartoon76(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14591,7 +14585,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-83", chooseCartoon83);
       function chooseCartoon83(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -14610,16 +14604,28 @@ function listenOnSelections(){
     $(document).on("click", "#color", function(){
       $("#profile").removeClass();
       $("#profile").addClass("color");
-      $("#profile-modal").hide();
+      $(".modal-background").hide();
+      $("#color-audio").trigger("play");
+
       $("#profile-holder").html("<img id='trace' class='profile-thumb' src='/assets/trace-a0b0213f6c8f9f8aed757ee4544122f8e1116a3c83ee9200a5870e75a494c763.png'/>");
+
+      $(".switch-holder").hide();
+      $("#done-div").html("<div id='remove-image'>Done</div>");
+
       adjustImageOpacity(1);
     })
 
     $(document).on("click", "#trace", function(){
       $("#profile").removeClass();
       $("#profile").addClass("trace");
-      $("#profile-modal").hide();
+      $(".modal-background").hide();
+      $("#trace-audio").trigger("play");
+
       $("#profile-holder").html("<img id='color' class='profile-thumb' src='/assets/color-3b76828c3ed82e1dab6c7ac6863f79daaf6accb1c99afe8c36318133d60aaaef.png'/>");
+
+      $("#remove-image").hide();
+      $("#switch-div").html("<div class='switch-holder'><div class='light-switch js-off'></div></div>");
+
       adjustImageOpacity(0.3);
     })
   }
@@ -14627,9 +14633,10 @@ function listenOnSelections(){
   // function adjustProfile(profile){
   //   $("#profile").removeClass();
   //   $("#profile").addClass("selection".replace("profile", profile));
+    // $(".modal-background").hide();
   //   $("#profile-modal").hide();
-  //   var adjustedHtml = "<img id='selection' class='profile-thumb' src='/selection.png'/>".replace(/selection/g, profile);
-  //   $("#profile-holder").html(adjustedHtml);
+  //   var adjustedHTML = "<img id='selection' class='profile-thumb' src='/selection.png'/>".replace(/selection/g, profile);
+  //   $("#profile-holder").html(adjustedHTML);
   // }
 
   function adjustImageOpacity(globalAlpha){
@@ -14639,12 +14646,13 @@ function listenOnSelections(){
   }
 
   function toggleCanvasImage(){
-    $(".light-switch").on("click", turnSwitch);
+    $(document).on("click", ".switch-holder", turnSwitch);
 
     function turnSwitch(){
-      $(this).parents("div:first").toggleClass("switch-on");
-      $(this).toggleClass("js-off");
-      if($(this).parents("div:first").hasClass("switch-on")){
+      $(this).toggleClass("switch-on");
+      $(this).children("div:first").toggleClass("js-off");
+      
+      if($(this).hasClass("switch-on")){
         imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5)
       } else {
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);

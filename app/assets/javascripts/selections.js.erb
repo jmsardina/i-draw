@@ -83,6 +83,7 @@ function listenOnSelections(){
       $("#profile").removeClass();
       $("#profile").addClass("color");
       $(".modal-background").hide();
+      $("#color-audio").trigger("play");
 
       $("#profile-holder").html("<img id='trace' class='profile-thumb' src='<%= asset_path('trace.png') %>'/>");
 
@@ -96,6 +97,7 @@ function listenOnSelections(){
       $("#profile").removeClass();
       $("#profile").addClass("trace");
       $(".modal-background").hide();
+      $("#trace-audio").trigger("play");
 
       $("#profile-holder").html("<img id='color' class='profile-thumb' src='<%= asset_path('color.png') %>'/>");
 
