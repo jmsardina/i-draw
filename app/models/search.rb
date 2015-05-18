@@ -1,5 +1,5 @@
 class Search
   def self.for(keyword)
-    Cartoon.where('name LIKE ?', "%#{keyword}%")
+    Cartoon.where('lower(name) LIKE ?', "%#{keyword.downcase}%")
   end
 end

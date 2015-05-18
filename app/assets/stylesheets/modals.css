@@ -90,3 +90,17 @@ img.example-profile:hover {
 .right-image-text {
   left: 50%;
 }
+
+.modal-background {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  margin: auto;
+  z-index: 999;
+  background: rgba(97, 131, 194, 0.7);
+  padding-top: 50%;
+}

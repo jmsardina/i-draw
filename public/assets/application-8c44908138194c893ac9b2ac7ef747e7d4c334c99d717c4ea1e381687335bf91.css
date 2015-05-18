@@ -1,3 +1,99 @@
+.tip {
+  margin: 5px;
+  cursor: pointer;
+}
+
+.tip:hover {
+  padding: 5px;
+}
+
+div#cartoons-header {
+  margin-top: -120px;
+  margin-left: 80px;
+}
+
+#new-cartoon {
+  margin-top: -100px;
+}
+
+#eraser {
+  cursor: pointer;
+  margin: auto;
+}
+
+.cartoon {
+  height: 200px;
+  width: auto;
+  margin: auto;
+}
+
+#js-undo {
+  cursor: pointer;
+  height: 40px;
+  width: auto;
+}
+
+#remove-image {
+  cursor:pointer;
+  background:yellow;
+  border: 1px dashed;
+  font-family: comic sans ms;
+  font-size: 20px;
+  margin-top: 15px;
+  text-align: center;
+}
+
+#start-over {
+  margin-top:-280px;
+  cursor: pointer;
+  font-size: 60px;
+  color: red;
+}
+
+#js-redo {
+  cursor: pointer;
+  height: 40px;
+  width: auto;
+  margin-bottom: 8px;
+}
+
+#save-drawing {
+  margin-top: 15px;
+  height: 50px;
+  width: auto;
+  cursor: pointer;
+}
+
+#new-cartoon {
+  margin-top: -100px;
+}
+
+#profile {
+  margin-top: -100px;
+}
+
+.switch-holder {
+  height: 25px;
+  width: 50px;
+  border-radius: 35%;
+  background-color: red;
+}
+
+.light-switch {
+  height: 25px;
+  width: 25px;
+  background-color: gray;
+  border-radius: 50%;
+  margin-left: 25px;
+}
+
+.switch-on {
+  background-color: green;
+}
+
+.js-off {
+  margin-left: 0px;
+}
 #header-div{
   position:fixed;
   padding-left: 0;
@@ -53,7 +149,8 @@
   height: 500px;
   border:1px solid;
   margin:auto;
-  z-index:10;
+  z-index:30;
+  pointer-events: none;
   position:absolute;
 }
 
@@ -80,20 +177,6 @@
   position:absolute;
 }
 
-.tip {
-  margin: 5px;
-  cursor: pointer;
-}
-
-.tip:hover {
-  padding: 5px;
-}
-
-div#cartoons-header {
-  margin-top: -120px;
-  margin-left: 80px;
-}
-
 #all-cartoons {
   height: 460px;
   overflow: scroll;
@@ -103,15 +186,36 @@ div#cartoons-header {
   border: 1px;
 }
 
-#new-cartoon {
-  margin-top: -100px;
-}
-
-#eraser {
+.profile-thumb {
   cursor: pointer;
-  margin: auto;
+  border: 1px solid;
+  margin-top: 10%;
+  margin-bottom: 10%;
+  width: 75%;
+  display: inline-block;
+  height: auto;
+  opacity: .5;
+  border-radius: 25%;
 }
 
+.profile-thumb:hover {
+  opacity: 1;
+}
+
+#footer {
+  position:fixed;
+  padding-left: 0;
+  text-align: center;
+  background: green;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  opacity: 1;
+  z-index: 100;
+}
 .modal-base {
   width: 100%;
   height: 100%;
@@ -147,29 +251,10 @@ button#close-modal {
   list-style-type: none;
 }
 
-#search-results {
-  padding-top:30px;
-}
-
-label {
+label.modal-label {
   font-family: comic sans MS;
   padding-top: 3%;
   padding-left: 5%;
-}
-
-#footer {
-  position:fixed;
-  padding-left: 0;
-  text-align: center;
-  background: green;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  height: 40px;
-  padding: 0;
-  border: 0;
-  opacity: 1;
-  z-index: 100;
 }
 
 #about:hover {
@@ -182,55 +267,60 @@ label {
   padding-right: 5%;
 }
 
-#start-over {
-  margin-top:-320px;
-  cursor: pointer;
-  font-size: 60px;
-  color: red;
+#profile-modal {
+  width: 45%;
+  min-width: 415px;
+  height: auto;
+  background-color: transparent;
 }
 
-#remove-image {
-  cursor:pointer;
-  background:yellow;
-  border: 1px dashed;
+#profile {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+img.example-profile {
+  cursor: pointer;
+  border: 1px solid;
+  margin-top: 20%;
+  width: 48%;
+  height: auto;
+  opacity: .5;
+  border-radius: 25%;
+}
+
+img.example-profile:hover {
+  opacity: 1;
+}
+
+.profile-text {
   font-family: comic sans ms;
-  font-size: 20px;
-  margin-top: 15px;
   text-align: center;
+  position: absolute;
+  font-size: 24px;
+  font-weight: bold;
+  margin-top:-10%;
+  margin-left: 5%;
 }
 
-.cartoon {
-  height: 200px;
-  width: auto;
+.right-image-text {
+  left: 50%;
+}
+
+.modal-background {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
   margin: auto;
-}
-
-#js-undo {
-  cursor: pointer;
-  height: 50px;
-  width: auto;
-}
-
-#js-redo {
-  cursor: pointer;
-  height: 50px;
-  width: auto;
-}
-
-#save-drawing {
-  margin-top: 15px;
-  height: 50px;
-  width: auto;
-  cursor: pointer;
-}
-
-#canvasDiv-footer {
-  height: 90px;
-  width: 500px;
-}
-
-#new-cartoon {
-  margin-top: -100px;
+  z-index: 999;
+  background: rgba(97, 131, 194, 0.7);
+  padding-top: 50%;
 }
 @charset "UTF-8";
 /*

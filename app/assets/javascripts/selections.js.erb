@@ -63,7 +63,7 @@ function listenOnSelections(){
       $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
       function chooseCartoon<%= cartoon.id %>(){
         if($("#profile").hasClass("color")){
-          imageHolderContext.globalAlpha = 1;
+          imageHolderContext.globalAlpha = .8;
         } else {
           imageHolderContext.globalAlpha = 0.3;
         }
@@ -82,7 +82,8 @@ function listenOnSelections(){
     $(document).on("click", "#color", function(){
       $("#profile").removeClass();
       $("#profile").addClass("color");
-      $("#profile-modal").hide();
+      $(".modal-background").hide();
+
       $("#profile-holder").html("<img id='trace' class='profile-thumb' src='<%= asset_path('trace.png') %>'/>");
 
       $(".switch-holder").hide();
@@ -94,7 +95,8 @@ function listenOnSelections(){
     $(document).on("click", "#trace", function(){
       $("#profile").removeClass();
       $("#profile").addClass("trace");
-      $("#profile-modal").hide();
+      $(".modal-background").hide();
+
       $("#profile-holder").html("<img id='color' class='profile-thumb' src='<%= asset_path('color.png') %>'/>");
 
       $("#remove-image").hide();
@@ -107,6 +109,7 @@ function listenOnSelections(){
   // function adjustProfile(profile){
   //   $("#profile").removeClass();
   //   $("#profile").addClass("selection".replace("profile", profile));
+    // $(".modal-background").hide();
   //   $("#profile-modal").hide();
   //   var adjustedHTML = "<img id='selection' class='profile-thumb' src='<%= asset_path('selection.png') %>'/>".replace(/selection/g, profile);
   //   $("#profile-holder").html(adjustedHTML);
@@ -119,13 +122,13 @@ function listenOnSelections(){
   }
 
   function toggleCanvasImage(){
-    $(document).on("click", ".light-switch", turnSwitch);
+    $(document).on("click", ".switch-holder", turnSwitch);
 
     function turnSwitch(){
-      $(this).parents("div:first").toggleClass("switch-on");
-      $(this).toggleClass("js-off");
+      $(this).toggleClass("switch-on");
+      $(this).children("div:first").toggleClass("js-off");
       
-      if($(this).parents("div:first").hasClass("switch-on")){
+      if($(this).hasClass("switch-on")){
         imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5)
       } else {
         imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
