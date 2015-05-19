@@ -8,7 +8,8 @@ function setVariables(){
   mouseCoordinates = new Array();
   var canvas = document.getElementById("canvas");
   var dataURL = canvas.toDataURL();
-  undoArray = [dataURL]
+  undoArray = [dataURL];
+  currentImage = document.createElement("img");
 }
 
 function listenOnMouse(){

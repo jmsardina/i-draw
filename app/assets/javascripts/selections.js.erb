@@ -80,6 +80,7 @@ function listenOnSelections(){
 
   function chooseProfile(){
     $(document).on("click", "#color", function(){
+      // adjustProfile("color");
       $("#profile").removeClass();
       $("#profile").addClass("color");
       $(".modal-background").hide();
@@ -94,6 +95,7 @@ function listenOnSelections(){
     })
 
     $(document).on("click", "#trace", function(){
+      // adjustProfile("trace");
       $("#profile").removeClass();
       $("#profile").addClass("trace");
       $(".modal-background").hide();
@@ -108,12 +110,15 @@ function listenOnSelections(){
     })
   }
 
-  // function adjustProfile(profile){
+  // function adjustProfile(selection){
   //   $("#profile").removeClass();
-  //   $("#profile").addClass("selection".replace("profile", profile));
-    // $(".modal-background").hide();
+  //   $("#profile").addClass("profile-name".replace("profile-name", selection));
+  //   $(".modal-background").hide();
+  //   $("#profile-name-audio".replace("profile-name", selection)).trigger("play");
+
+  //   $("#profile-holder").html("<img id='profile-name' class='profile-thumb' src='assets/profile-name.png') %>'/>".replace(/profile-name/g, selection));
   //   $("#profile-modal").hide();
-  //   var adjustedHTML = "<img id='selection' class='profile-thumb' src='<%= asset_path('selection.png') %>'/>".replace(/selection/g, profile);
+  //   var adjustedHTML = "<img id='profile-name' class='profile-thumb' src='assets/profile-name.png'/>".replace(/profile-name/g, selection);
   //   $("#profile-holder").html(adjustedHTML);
   // }
 
