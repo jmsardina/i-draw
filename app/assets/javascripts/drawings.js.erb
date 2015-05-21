@@ -4,7 +4,7 @@ $(function(){
 });
 
 function setVariables(){
-  var paint;
+  paint = false;
   mouseCoordinates = new Array();
   var canvas = document.getElementById("canvas");
   var dataURL = canvas.toDataURL();
@@ -14,19 +14,19 @@ function setVariables(){
 
 function listenOnMouse(){
   $("#canvas").on("mousedown", mouseDown);
+  $("#canvas").on("mousemove", mouseMove);
+  $("#canvas").on("mouseup", mouseUp);
 
   function mouseDown(e){
     paint = true;
     
     recordHistory();
     mouseCoordinates.push([e.offsetX, e.offsetY]);
-    $(this).on("mousemove", mouseMove);
   }
 
   function mouseMove(e){
     if(paint){
       mouseCoordinates.push([e.offsetX, e.offsetY]);
-      $(this).on("mouseup", mouseUp);
       draw(e);
     }
   }
