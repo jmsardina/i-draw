@@ -1,0 +1,7 @@
+<div id="new-cartoon">
+	<%= form_for(@cartoon, html: { multipart: true }) do |f| %>
+		<%= f.text_field :name, placeholder: "Cartoon Name" %>
+		<%= f.file_field :avatar %>
+	 	<%= f.submit %>
+	<% end %>
+</div>

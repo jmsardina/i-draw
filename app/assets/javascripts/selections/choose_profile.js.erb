@@ -1,0 +1,31 @@
+function chooseProfile(){
+  $(document).on("click", "#color", function(){
+    // adjustProfile("color");
+    $("#profile").removeClass();
+    $("#profile").addClass("color");
+    $(".modal-background").hide();
+    $("#color-audio").trigger("play");
+
+    $("#profile-holder").html("<img id='trace' class='profile-thumb' src='<%= asset_path('trace.png') %>'/>");
+
+    $(".switch-holder").hide();
+    $("#done-div").html("<div id='remove-image'>Done</div>");
+
+    adjustImageOpacity(1);
+  })
+
+  $(document).on("click", "#trace", function(){
+    // adjustProfile("trace");
+    $("#profile").removeClass();
+    $("#profile").addClass("trace");
+    $(".modal-background").hide();
+    $("#trace-audio").trigger("play");
+
+    $("#profile-holder").html("<img id='color' class='profile-thumb' src='<%= asset_path('color.png') %>'/>");
+
+    $("#remove-image").hide();
+    $("#switch-div").html("<div class='switch-holder'><div class='light-switch js-off'></div></div>");
+
+    adjustImageOpacity(0.3);
+  })
+}

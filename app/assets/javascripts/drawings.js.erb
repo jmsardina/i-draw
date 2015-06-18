@@ -1,21 +1,16 @@
-$(function(){
-  setUpEnvironment();
-  setVariables();
-});
-
 function setVariables(){
   paint = false;
   mouseCoordinates = new Array();
-  var canvas = document.getElementById("canvas");
+  var canvas = document.getElementById("drawing-canvas");
   var dataURL = canvas.toDataURL();
   undoArray = [dataURL];
   currentImage = document.createElement("img");
 }
 
 function listenOnMouse(){
-  $("#canvas").on("mousedown", mouseDown);
-  $("#canvas").on("mousemove", mouseMove);
-  $("#canvas").on("mouseup", mouseUp);
+  $("#drawing-canvas").on("mousedown", mouseDown);
+  $("#drawing-canvas").on("mousemove", mouseMove);
+  $("#drawing-canvas").on("mouseup", mouseUp);
 
   function mouseDown(e){
     paint = true;
@@ -33,30 +28,30 @@ function listenOnMouse(){
 
   function mouseUp(e){
     paint = false;
-    context.beginPath();
-    context.arc(e.offsetX, e.offsetY, context.lineWidth/2, 0, Math.PI*2, true);
-    context.closePath();
-    context.fillStyle = context.strokeStyle
-    context.fill();
+    drawingContext.beginPath();
+    drawingContext.arc(e.offsetX, e.offsetY, drawingContext.lineWidth/2, 0, Math.PI*2, true);
+    drawingContext.closePath();
+    drawingContext.fillStyle = drawingContext.strokeStyle
+    drawingContext.fill();
     mouseCoordinates = new Array();
   }
 }
 
 function draw(e){
   if(paint){
-    context.beginPath();
-    context.lineJoin = "round";
-    context.lineCap = "round";
+    drawingContext.beginPath();
+    drawingContext.lineJoin = "round";
+    drawingContext.lineCap = "round";
 
-    context.moveTo(mouseCoordinates[mouseCoordinates.length-2][0], mouseCoordinates[mouseCoordinates.length-2][1]);
-    context.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1]);
+    drawingContext.moveTo(mouseCoordinates[mouseCoordinates.length-2][0], mouseCoordinates[mouseCoordinates.length-2][1]);
+    drawingContext.lineTo(mouseCoordinates[mouseCoordinates.length-1][0], mouseCoordinates[mouseCoordinates.length-1][1]);
     mouseCoordinates.splice(-2, 1);
-    context.stroke();
+    drawingContext.stroke();
   }
 }
 
 function recordHistory(){
-  var canvas = document.getElementById("canvas");
+  var canvas = document.getElementById("drawing-canvas");
   var dataURL = canvas.toDataURL();
   undoArray.push(dataURL);
 
@@ -75,13 +70,13 @@ function listenOnCanvasClearing(){
   $("#js-redo").on("click", redo);
 
   function erasing(){
-    context.globalCompositeOperation = "destination-out";
-    $("#canvas").attr("class", "erasing");
+    drawingContext.globalCompositeOperation = "destination-out";
+    $("#drawing-canvas").attr("class", "erasing");
   }
  
   function clearCanvas(){
     if(confirm("We're about to erase your picture!")){
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      drawingContext.clearRect(0, 0, canvas.width, canvas.height);
     }
   }
 
@@ -89,7 +84,7 @@ function listenOnCanvasClearing(){
     if(confirm("Are you sure you're done?")){
       imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
       if($("#profile").hasClass("color")){
-        context.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
+        drawingContext.drawImage(currentImage, canvas.width/60+85, 10, canvas.width/1.3, canvas.height-18);
       }
     }
   }
@@ -101,23 +96,23 @@ function listenOnCanvasClearing(){
       redoArray.unshift(dataURL);
     }
     if(undoArray.length >= 1){
-      context.clearRect(0, 0, $("#canvas").width(), $("#canvas").height());
+      drawingContext.clearRect(0, 0, $("#drawing-canvas").width(), $("#drawing-canvas").height());
       var image = document.createElement("img");
    
       redoArray.unshift(undoArray.pop());
       image.setAttribute("src", redoArray[0]);
-      context.drawImage(image, 0, 0);
+      drawingContext.drawImage(image, 0, 0);
     }
   }
 
   function redo(){
     if(redoArray.length >= 1){
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      drawingContext.clearRect(0, 0, canvas.width, canvas.height);
       var image = document.createElement("img");
 
       undoArray.push(redoArray.shift())
       image.setAttribute("src", undoArray[undoArray.length-1]);
-      context.drawImage(image, 0, 0);
+      drawingContext.drawImage(image, 0, 0);
     }
   }
 }

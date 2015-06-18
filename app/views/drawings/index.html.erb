@@ -4,111 +4,33 @@
       <h2><a href="/">iDraw</a></h2>
     </div>
   </div>
- <!-- BEGIN SEARCH FORM -->
-  <div class="right">
-    <div class="search">
-      <%= form_tag :controller => 'search', :action => 'create', :method => 'get' do %>
-        <%= text_field_tag :keyword, params[:keyword], :id => 'search-field' %>
-        <%= submit_tag "Search!" %> 
-      <% end %> 
-    </div>
-  </div>
+  <%= render 'search_form' %>
 </div>
-<!-- END SEARCH FORM -->
-
-<!-- BEGIN PROFILE MODAL -- ACTIVE ON DOCUMENT-READY -->
-<div class="modal-background">
-  <div class="modal-main" id="profile-modal">
-    <div id="profile">
-      <img id="color" class="example-profile" src="<%= asset_path('color.png') %>"/>
-      <p class="profile-text left">COLORING</p>
-
-      <img id="trace" class="example-profile"src="<%= asset_path('trace.png') %>"/>
-      <p class="profile-text right-image-text">TRACING</p>
-    </div>
-  </div>
-</div>
-<!-- END PROFILE MODAL -->
 
 <table>
   <tr>
     <td>
-      <div id="canvasDiv"></div>
-      <!-- <div id="new-cartoon">
-        <%#= form_for(@cartoon, html: { multipart: true }) do |f| %>
-          <%#= f.text_field :name, placeholder: "Cartoon Name" %>
-          <%#= f.file_field :avatar %>
-          <%#= f.submit %>
-        <%# end %>
-      </div> -->
-    </td>
-
-    <td>
-      <div id="start-over"><strong>×</strong></div>
-      <img id="js-undo" src="<%= asset_path('undo.png') %>"/><br>
-      <img id="js-redo" src="<%= asset_path('redo.png') %>"/><br>
-
-      
-      <div id="profile-holder"></div>
-
-      <div id="switch-div"></div>
-      <div id="done-div"></div>
-
-      <!-- <img id="save-drawing" src="<%#= asset_path('save.png') %>"/> -->
-    </td>
-
-    <td>
-      <div id="cartoons-header"><h4>Choose Your Favorite</h4></div>
-      <div id="all-cartoons">
-        <% @cartoons.each do |cartoon| %>
-          <div>
-            <%= image_tag cartoon.image_url, class: "cartoon cartoon-#{cartoon.id}"%>
-          </div>
-        <% end %>
+      <div id="workspace">
+        <%= render 'drawings/workspace/tray' %>
+        <%= render 'drawings/workspace/canvases' %>
       </div>
+      <%#= render 'upload_form' %>
     </td>
 
     <td>
-    <!-- BEGIN HTML5 COLOR PICKER -->
-      <div id="html5DIV">
-        <input type="color" id="html5colorpicker" class="form-control" value="#ff0000">
-      </div>
-    <!-- END HTML5 COLOR PICKER -->
+      <%= render 'drawings/workspace/sidebar' %>
+    </td>
+
+    <td>
+      <%= render 'drawings/workspace/all_cartoons' %>
     </td>
   </tr>
 </table>
 
-<!-- BEGIN SEARCH MODAL -->
-<div class="modal-base" id="search-modal-base">
-  <div class="modal-main" id="search-modal-main">
-    <button id="close-modal">×</button>
-
-    <label class="modal-label"><h2>Choose Your Favorite!</h2></label>
-    <div id="results-div"></div>
-  </div>
-</div>
-<!-- END SEARCH MODAL -->
-
-<!-- BEGIN AUDIO TAGS -->
-<audio class="audios" id="color-audio">
-  <source src="audios/color.m4a" type="audio/mpeg">
-</audio>
-<audio class="audios" id="trace-audio">
-  <source src="audios/trace.m4a" type="audio/mpeg">
-</audio>
-<!-- END AUDIO TAGS -->
-
-<!-- <div class="modal-base" id="about-modal-base">
-  <div class="modal-main" id="about-modal-main">
-    <button id="close-modal">×</button>
-
-    <label class="modal-label"><h2>About</h2></label>
-    <h4 class="modal-text">iDraw allows you to draw your favorite cartoon character by tracing over it.
-
-    It's super simple! After you choose your profile (coloring/tracing), choose a cartoon character from the list, and color away.
-    </h4>
-  </div>
-</div> -->
+<%= render 'drawings/modals/search_modal' %>
+<%#= render 'drawings/modals/about_modal' %>
+<%#= render 'drawings/modals/profile_modal' %>
+<%= render 'audio' %>
 
 <div id="footer">
   <div class="center">

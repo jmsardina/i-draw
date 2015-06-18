@@ -1,0 +1,11 @@
+<div id="cartoons-header">
+	<h4>Choose Your Favorite</h4>
+</div>
+
+<div id="all-cartoons">
+	<% @cartoons.each do |cartoon| %>
+	  <div>
+	    <%= image_tag cartoon.image_url, class: "cartoon cartoon-#{cartoon.id}"%>
+	  </div>
+	<% end %>
+</div>

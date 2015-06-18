@@ -1,0 +1,21 @@
+function chooseCartoon(){
+  <% Cartoon.all.each do |cartoon| %>
+    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
+    
+    function chooseCartoon<%= cartoon.id %>(){
+      if($("#profile").hasClass("color")){
+        imageHolderContext.globalAlpha = .8;
+      } else {
+        imageHolderContext.globalAlpha = 0.3;
+      }
+      
+      var image = this;
+      currentImage = image;
+      $(".light-switch").parents("div:first").addClass("switch-on");
+      $(".light-switch").removeClass("js-off");
+      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
+      imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+      $(".modal-base").hide();
+    }
+  <% end %>
+}

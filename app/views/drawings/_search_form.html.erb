@@ -1,0 +1,8 @@
+<div class="right">
+	<div class="search">
+	  <%= form_tag :controller => 'search', :action => 'create', :method => 'get' do %>
+	    <%= text_field_tag :keyword, params[:keyword], :id => 'search-field' %>
+	    <%= submit_tag "Search!" %> 
+	  <% end %> 
+	</div>
+</div>

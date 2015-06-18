@@ -35,7 +35,7 @@
   color: red;
 }
 
-#canvasDiv {
+#workspace {
   height:600px;
   width: 1000px;
   border: 1px;
@@ -72,17 +72,35 @@
 }
 
 #canvas .erasing {
-  cursor: url(http://icons.iconarchive.com/icons/oxygen-icons.org/oxygen/48/Actions-draw-eraser-icon.png), auto;
+  cursor: url(/assets/eraser.png), auto;
 }
 
-#canvas {
-  cursor: url(http://cur.cursors-4u.net/others/oth-7/oth697.cur), auto;
+#drawing-canvas {
+  cursor: url(/assets/pencil.png), auto;
   width: 900px;
   height: 500px;
   border: 1px solid;
   margin:auto;
   z-index:20;
   position:absolute;
+}
+
+.color {
+  border-radius: 50%;
+  height: 48px;
+  width: 48px;
+}
+
+.tip {
+  background-color: black;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.eraser {
+  background: url(/assets/eraser.png) no-repeat center;
+  height: 50px;
+  width: 50px;
 }
 
 #all-cartoons {

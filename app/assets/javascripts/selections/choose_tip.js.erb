@@ -1,0 +1,16 @@
+function chooseTip(){
+  <% Drawing::TIPS.each do |tip| %>
+    $("#<%= tip %>").on("click", chooseSize<%= tip %>);
+
+    function chooseSize<%= tip %>(){
+      var currentTipSize = drawingContext.lineWidth.toString();
+      var currentTipElement = document.getElementById(currentTipSize);
+
+      $(currentTipElement).removeClass("in-use").addClass("not-in-use");
+
+      drawingContext.lineWidth = <%= tip %>;
+
+      $(this).removeClass("not-in-use").addClass("in-use");
+    }
+  <% end %>
+}

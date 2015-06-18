@@ -1,0 +1,34 @@
+function chooseColor(){
+    $("#html5colorpicker").on("change", fromColorPicker);
+    fromButtons();
+
+    function fromButtons(){
+      <% Drawing::COLORS.each do |color| %>
+        $("#<%= color %>").on("click", <%= color %>);
+       
+        function <%= color %>(){
+          var currentColorLetters = drawingContext.strokeStyle.split(
+            '');
+          currentColorLetters.shift();
+          var currentColorClass = "." + currentColorLetters.join("");
+          $(currentColorClass).attr("style", "background-color: colorName; border-radius:50%; height:50px; width:50px;".replace("colorName", $(currentColorClass).attr("id")
+            ));
+         
+          drawingContext.globalCompositeOperation = "source-over";
+          drawingContext.strokeStyle = "<%= color %>";
+          $(this).attr("style", "background-color:<%= color %>;border-radius:50%;height:50px;width:50px;box-shadow: inset 0 0 0 3px #27496d;");
+
+          var newColorLetters = drawingContext.strokeStyle.split(
+            '');
+          newColorLetters.shift();
+          var newColorClass = newColorLetters.join("");
+          $(this).addClass(newColorClass);
+        }
+      <% end %>
+    }
+
+  function fromColorPicker(){
+    drawingContext.globalCompositeOperation = "source-over"
+    drawingContext.strokeStyle = $(this).val();
+  }
+} 

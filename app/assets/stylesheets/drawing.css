@@ -3,6 +3,18 @@
   cursor: pointer;
 }
 
+.tip.in-use {
+  background-color: red;
+  border-radius: 50%; 
+  display: inline-block;
+}
+
+.tip.not-in-use {
+  background-color: black;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 .tip:hover {
   padding: 5px;
 }
