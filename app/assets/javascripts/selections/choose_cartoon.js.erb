@@ -3,18 +3,17 @@ function chooseCartoon(){
     $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
     
     function chooseCartoon<%= cartoon.id %>(){
-      if($("#profile").hasClass("color")){
-        imageHolderContext.globalAlpha = .8;
+      removeCartoon();
+      currentImage = this;
+      if( currentProfile() == 'color'){
+        adjustImageOpacity(0.8)
       } else {
-        imageHolderContext.globalAlpha = 0.3;
+        adjustImageOpacity(0.3)
       }
-      
-      var image = this;
-      currentImage = image;
+
       $(".light-switch").parents("div:first").addClass("switch-on");
-      $(".light-switch").removeClass("js-off");
-      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-      imageHolderContext.drawImage(image, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+      $(".light-switch").removeClass("switch-off");
+      placeCartoon();
       $(".modal-base").hide();
     }
   <% end %>

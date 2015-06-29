@@ -1,23 +1,16 @@
 function setModals(){
-  setSearchModal();
+  $(".modal-base").hide(); // this will hide all modals
   setAboutModal();
-  setProfileModal();
-  $(document).on("click", "button#close-modal", hideModal);
-  
-  function setProfileModal(){
-    $("#profile-modal").hide();
-    $("#profile-modal").show();
-  }
+  setSearchModal();
+  $(document).on("click", ".close-modal", hideModal);
 
   function setAboutModal(){
-    $("#about-modal-base").hide()
     $("#about").on("click", function(){ 
       $("#about-modal-base").show()
     });
   }
   
   function setSearchModal(){
-    $(".modal-base").hide();
     $(".search").children("form:first").on("submit", showSearchModal);
 
     function showSearchModal(e){
@@ -38,6 +31,5 @@ function setModals(){
 
   function hideModal(){
     $(".modal-base").hide();
-    $("#profile-modal").hide();
   }
 }

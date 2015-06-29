@@ -1,20 +1,21 @@
-function adjustImageOpacity(globalAlpha){
-    imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-    imageHolderContext.globalAlpha = globalAlpha;
-    imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5);
+function removeCartoon(){
+  imageHolderContext.clearRect(0, 0, $("#drawing-canvas").width(), $("#drawing-canvas").height());
 }
 
-function toggleCanvasImage(){
-  $(document).on("click", ".switch-holder", turnSwitch);
+function placeCartoon(){
+  imageHolderContext.drawImage(
+  	currentImage,
+  	$("#drawing-canvas").width()/40, // horizontal distance from top left corner of image to left-side of canvas
+  	10, // vertical distance from top left corner of image to top of canvas
+  	(($("#drawing-canvas").width()) * .85), // image width on canvas
+  	(((($("#drawing-canvas").width()) * .85)/currentImage.width) * currentImage.height) // image height on canvas
+  );
+}
 
-  function turnSwitch(){
-    $(this).toggleClass("switch-on");
-    $(this).children("div:first").toggleClass("js-off");
-    
-    if($(this).hasClass("switch-on")){
-      imageHolderContext.drawImage(currentImage, canvas.width/25, 5, canvas.width/4, canvas.height/3.5)
-    } else {
-      imageHolderContext.clearRect(0, 0, canvas.width, canvas.height);
-    }
-  }
+function currentProfile(){
+  return $("#profile").attr("class");
+}
+
+function clearDrawingCanvas(){
+  drawingContext.clearRect(0, 0, $("#drawing-canvas").width(), $("#drawing-canvas").height());
 }
