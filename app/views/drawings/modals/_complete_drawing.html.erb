@@ -1,0 +1,14 @@
+<div class="modal-base">
+  <div class="modal-main" id="completed-drawing-modal">
+    <button class="close-modal">×</button>
+    <table>
+    	<tr>
+    		<th class="modal-header"><%= Drawing::CHEERS.sample %></th>
+    	</tr>
+    	<tr class="modal-body">
+    		<canvas class="canvas" id="completed-drawing"></canvas>
+            <img class="save-drawing" src="<%= asset_path('save.png') %>">
+    	</tr>
+    </table>
+  </div>
+</div>
