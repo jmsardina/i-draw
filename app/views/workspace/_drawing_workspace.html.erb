@@ -1,0 +1,28 @@
+<table>
+  <thead>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th>Choose Your Favorite!</th>
+  </thead>
+  
+  <tbody id="page-body">
+    <tr>
+      <td id="tray-section">
+        <%= render 'workspace/tray' %>
+      </td>
+      <td class="canvas-section">
+        <%= render 'workspace/canvases' %>
+      </td>
+
+      <td id="sidebar-section">
+        <%= render 'workspace/sidebar' %>
+      </td>
+
+      <td id="cartoons-section">
+        <%= render 'cartoons/all_cartoons' %>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
