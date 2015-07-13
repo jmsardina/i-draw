@@ -1,21 +1,60 @@
-function removeCartoon(){
-  imageHolderContext.clearRect(0, 0, $("#drawing-canvas").width(), $("#drawing-canvas").height());
+function clearCanvas(canvas, context) {
+  eval(context).clearRect(0, 0, $(canvas).width(), $(canvas).height());
 }
 
-function placeCartoon(){
-  imageHolderContext.drawImage(
+function placeNewCartoon(canvas, context) {
+  var imageWidth = ( ($(canvas).width()) * .85 );
+  var imageHeight = ( (imageWidth/currentImage.width) * currentImage.height );
+  var horizontalOffset = $(canvas).width()/40;
+  var verticalOffset = ( $(canvas).height() - currentImage.height )/50;
+
+  eval(context).drawImage(
   	currentImage,
-  	$("#drawing-canvas").width()/40, // horizontal distance from top left corner of image to left-side of canvas
-  	10, // vertical distance from top left corner of image to top of canvas
-  	(($("#drawing-canvas").width()) * .85), // image width on canvas
-  	(((($("#drawing-canvas").width()) * .85)/currentImage.width) * currentImage.height) // image height on canvas
+  	horizontalOffset,
+  	verticalOffset,
+  	imageWidth,
+  	imageHeight
   );
+}
+
+function copyDrawingToCanvas(originalCanvasId, receiverContext) {
+  var originalCanvasElement = document.getElementById(originalCanvasId)
+  var drawingURL = originalCanvasElement.toDataURL();
+  var copiedDrawing = document.createElement("img");
+  copiedDrawing.setAttribute("src", drawingURL);
+
+  eval(receiverContext).drawImage( copiedDrawing, 0, 0 );
 }
 
 function currentProfile(){
   return $("#profile").attr("class");
 }
 
-function clearDrawingCanvas(){
-  drawingContext.clearRect(0, 0, $("#drawing-canvas").width(), $("#drawing-canvas").height());
+function adjustImageOpacity(globalAlpha){
+    clearCanvas("#image-holder", "imageHolderContext");
+    imageHolderContext.globalAlpha = globalAlpha;
+    placeNewCartoon("#image-holder", "imageHolderContext");
+}
+
+$(function toggleCanvasImage(){
+    $(document).on("click", ".switch-holder", turnSwitch);
+
+    function turnSwitch(){
+        $(this).toggleClass("switch-on");
+        $(this).children("div:first").toggleClass("switch-off");
+
+        if( $(this).hasClass("switch-on") ){
+            placeNewCartoon("#image-holder", "imageHolderContext");
+        } else {
+            clearCanvas("#image-holder", "imageHolderContext");
+        }
+    }
+});
+
+function showModal(modalIdSelector) {
+  $(modalIdSelector).parents(".modal-base").removeClass("hidden");
+}
+
+function hideModal(modalIdSelector) {
+  $(modalIdSelector).parents(".modal-base").addClass("hidden");
 }
