@@ -1,20 +1,15 @@
-function chooseCartoon(){
-  <% Cartoon.all.each do |cartoon| %>
-    $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
-    
-    function chooseCartoon<%= cartoon.id %>(){
-      removeCartoon();
-      currentImage = this;
-      if( currentProfile() == 'color'){
-        adjustImageOpacity(0.8)
-      } else {
-        adjustImageOpacity(0.3)
-      }
+$(function chooseCartoon(){
+    <% Cartoon.all.each do |cartoon| %>
+        $(document).on("click", ".cartoon-<%= cartoon.id %>", chooseCartoon<%= cartoon.id %>);
 
-      $(".light-switch").parents("div:first").addClass("switch-on");
-      $(".light-switch").removeClass("switch-off");
-      placeCartoon();
-      $(".modal-base").hide();
-    }
-  <% end %>
-}
+        function chooseCartoon<%= cartoon.id %>(){
+            clearCanvas("#image-holder", "imageHolderContext");
+            currentImage = this;
+
+            $(".light-switch").parents("div:first").addClass("switch-on");
+            $(".light-switch").removeClass("switch-off");
+            placeNewCartoon("#image-holder", "imageHolderContext");
+            hideModal("#search-modal");
+        }
+    <% end %>
+});

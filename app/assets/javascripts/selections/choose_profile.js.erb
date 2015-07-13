@@ -1,25 +1,30 @@
-function chooseProfile(){
-  $(document).on("click", ".profile", changeProfile);
-  
-  function changeProfile(){
-    $("#profile").toggleClass("trace").toggleClass("color");
-    $(".profile.thumb").toggleClass("hidden");
+$(function chooseProfile(){
+    $(document).on("click", ".profile", changeProfile);
 
-    if( $(this).attr("id") === 'color' ){
-      chooseTraceProfile();
-    } else {
-      chooseColorProfile();
+    function changeProfile(){
+        if( $(this).hasClass("trace-profile") ){
+            chooseTraceProfile();
+        } else if( $(this).hasClass("color-profile") ) {
+            chooseColorProfile();
+        }
+
+        hideModal("#profile-modal");
     }
-  }
 
-  function chooseTraceProfile(){
-   $("#color-audio").trigger("play");
-    adjustImageOpacity(1);
-  }
+    function chooseTraceProfile(){
+        $("#trace-audio").trigger("play");
+        $(".trace-profile").addClass("hidden");
+        $(".color-profile").removeClass('hidden');
+        $("#profile").addClass("tracing").removeClass("coloring");
+        adjustImageOpacity(0.3);
+    }
 
-  function chooseColorProfile(){
-    $("#trace-audio").trigger("play");
-    adjustImageOpacity(0.3);
-  }
-}
+    function chooseColorProfile(){
+        $("#color-audio").trigger("play");
+        $(".color-profile").addClass("hidden");
+        $(".trace-profile").removeClass('hidden');
+        $("#profile").addClass("coloring").removeClass("tracing");
+        adjustImageOpacity(1);
+    }
+});
 

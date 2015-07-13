@@ -1,35 +1,35 @@
-function setModals(){
-  $(".modal-base").hide(); // this will hide all modals
-  setAboutModal();
-  setSearchModal();
-  $(document).on("click", ".close-modal", hideModal);
+$(function setModals(){
+    $(".modal-base").addClass("hidden");
+    showModal("#profile-modal");
+    setAboutModal();
 
-  function setAboutModal(){
-    $("#about").on("click", function(){ 
-      $("#about-modal-base").show()
+    setSearchModal();
+    $(document).on("click", ".close-modal", function(){ 
+        hideModal(this);
     });
-  }
-  
-  function setSearchModal(){
-    $(".search").children("form:first").on("submit", showSearchModal);
 
-    function showSearchModal(e){
-      e.preventDefault();
-      var $form = $(this);
-      var href = "/search"
-
-      $.ajax(href, {
-        method: "GET",
-        "data": $form.serialize(),
-        "complete": function(response){
-          $("div#results-div").html(response.responseText);
-          $("#search-modal-base").show();
-        }
-      });
+    function setAboutModal(){
+        $("#about").on("click", function(){ 
+            showModal("#about-modal");
+        });
     }
-  }
 
-  function hideModal(){
-    $(".modal-base").hide();
-  }
-}
+    function setSearchModal(){
+      $(".search").children("form:first").on("submit", showSearchModal);
+
+        function showSearchModal(e){
+            e.preventDefault();
+            var $form = $(this);
+            var href = $form.attr("action")
+
+            $.ajax(href, {
+              method: "GET",
+              "data": $form.serialize(),
+              "complete": function(response){
+                $("div#results-div").html(response.responseText);
+                showModal("#search-modal");
+              }
+            });
+        }
+    }
+});
