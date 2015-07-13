@@ -14,45 +14,60 @@
     font-family: comic sans MS;
     height: 70%;
     left: 15%; 
-    margin: auto; 
     min-width: 341px;
     overflow: scroll; 
     position: fixed; 
     width: 70%;
     z-index: 1000;
+    text-align: center;
+    font-size: 40px;
+
+    &.profile-modal {
+      overflow: hidden;
+    }
 
     .close-modal {
       display: block;
       float: right; 
-      list-style-type: none;
       position: fixed;
     } 
     
+    .modal-header {
+      background-color: rgb(234, 249, 234); /* honeydew */
+      font-size: 40px;
+      padding: 0;
+    }
+
+    table {
+      margin-top: 0;
+      overflow: none;
+   
+      .modal-body {
+        font-size: 30px;
+        text-align: center;
+
+        .github-note {
+          font-size: 15px;
+        }
+      }
+    }
+    
+
     &#completed-drawing-modal {
       width: 80%;
-      height: 80%;
-      margin: auto;
-      bottom: 10%;
-      top: 10%;
+      height: 90%;
+      left: 10%;
+      bottom: 5%;
+      top: 5%;
       text-align: center;
 
       .modal-header {
         font-size: 26px;
         background-color: yellow;
       }
-    }
-    
-    .modal-header {
-      background-color: rgb(234, 249, 234); /* honeydew */
-      font-size: 40px;
-    }
 
-    .modal-body {
-      font-size: 30px;
-      text-align: center;
-
-      .github-note {
-        font-size: 15px;
+      .canvas {
+        position: initial;
       }
     }
   }
@@ -62,10 +77,20 @@
     cursor: pointer;
   }
 
-  #profile-modal {
-    height: auto;
-    min-width: 415px;
-    width: 45%;
+  &#profile-modal-base{
+
+    tr {
+      vertical-align: top;
+
+      &#profiles-container {
+        height: 200px;
+      }
+
+      .profile {
+        margin-top: 0;
+        width: 45%;
+      }
+    }
   }
 }
 
@@ -77,8 +102,6 @@
 }
 
 .profile {
-  border: 1px solid;
-  border-radius: 25%;
   cursor: pointer;
   display: inline-block;
   height: auto;
@@ -92,9 +115,8 @@
   }
 
   &.large {
-    margin-top: 20%;
-    width: 48%;
-   
+    margin-top: 5%;
+    width: 50%;   
   }
 
   &:hover {
