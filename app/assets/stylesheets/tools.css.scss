@@ -1,0 +1,63 @@
+#tray-section {
+    width: 10%;
+
+  #tray {
+    display: inline-block;
+    height: 90%;
+    padding: 0;
+    min-width: 59px;
+    z-index: 2;
+    text-align: center;
+
+
+    .color {
+      border-radius: 50%;
+      width: 45%;
+      min-width: 26px;
+      min-height: 42px;
+
+      &.in-use {
+        box-shadow: inset 0 0 0 3px #27496d;
+      }
+    }
+
+    .tip {
+      background-color: black;
+      border-radius: 50%;
+      display: inline-block;
+      margin: 5px;
+      cursor: pointer;
+      display: inline-block;
+      
+      &.in-use {
+        background-color: red !important;
+      }
+
+      &.not-in-use {
+        background-color: black;
+      }
+
+      &:hover {
+        background-color: green !important;
+      }
+    }
+
+    #eraser {
+      cursor: pointer;
+      margin: auto;
+    }
+
+    .eraser {
+      background: url(/assets/eraser.png) no-repeat center;
+      height: auto;
+      width: 80%;
+    }
+  }
+}
+
+.save-drawing {
+  vertical-align: top;
+  height: 10%;
+  width: auto;
+  cursor: pointer;
+}

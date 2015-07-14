@@ -10,5 +10,6 @@ class DrawingsController < ApplicationController
         format.js { }
       end
     end
+    render 'layouts/main'
   end
 end

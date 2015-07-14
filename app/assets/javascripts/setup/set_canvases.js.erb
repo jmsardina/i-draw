@@ -1,0 +1,90 @@
+$(function setCanvases(){
+	$("canvas").attr( "height", $(".canvas-section").height() );
+	$("canvas").attr( "width", $(".canvas-section").width() );
+
+	var drawingCanvas = document.getElementById("drawing-canvas");
+		drawingContext = drawingCanvas.getContext("2d");
+	var imageHolder = document.getElementById("image-holder");
+		imageHolderContext = imageHolder.getContext("2d");
+	var completedDrawing = document.getElementById("completed-drawing");
+		completedDrawingContext = completedDrawing.getContext("2d");
+	
+	$("#js-undo").on("click", undo);
+	$("#js-redo").on("click", redo);
+
+	var image = document.createElement("img");
+	var paint = false;
+
+	var undoArray = [];
+	var redoArray = [];
+
+	$(function draw(){
+		if ( identifyDevice() === 'mobile' ) {
+			drawingCanvas.addEventListener("touchstart", startDrawing);
+			drawingCanvas.addEventListener("touchmove", keepDrawing);
+			drawingCanvas.addEventListener("touchend", stopDrawing);
+		} else {
+			$("#drawing-canvas").on("mousedown", startDrawing);
+			$("#drawing-canvas").on("mousemove", keepDrawing);
+			$("#drawing-canvas").on("mouseup", stopDrawing);
+		}
+
+		function startDrawing(e){
+			paint = true;
+			drawingContext.lineCap = "round";
+
+			drawingContext.beginPath();
+			drawingContext.moveTo( (e.pageX - $(e.target).offset().left), (e.pageY - $(e.target).offset().top))
+		}
+
+		function keepDrawing(e){
+			if(paint){
+				drawingContext.lineTo( (e.pageX - $(e.target).offset().left), (e.pageY - $(e.target).offset().top))
+				drawingContext.stroke();
+			}
+		}
+
+		function stopDrawing(e){
+			paint = false;
+
+			drawingContext.beginPath();
+			drawingContext.arc( (e.pageX - $(e.target).offset().left), (e.pageY - $(e.target).offset().top), drawingContext.lineWidth/2, 0, Math.PI*2, true);
+			drawingContext.fillStyle = drawingContext.strokeStyle;
+			drawingContext.fill();
+
+			recordHistory();
+		}
+	});
+
+	function recordHistory(){
+		var dataURL = drawingCanvas.toDataURL();
+		undoArray.push(dataURL);
+		
+		if(undoArray.length >= 10){
+			undoArray.splice(0, 1);
+		}
+
+		redoArray = [];	
+	}
+
+	function undo(){
+		if(undoArray.length >= 1){
+			var lastStroke = undoArray.pop();
+			redoArray.unshift(lastStroke);
+			clearCanvas("#drawing-canvas", "drawingContext");
+		
+			image.setAttribute("src", undoArray[undoArray.length-1]);
+			drawingContext.drawImage(image, 0, 0);
+		}
+	}
+
+	function redo(){
+		if(redoArray.length >= 1){
+			clearCanvas("#drawing-canvas", "drawingContext");
+
+			undoArray.push(redoArray.shift())
+			image.setAttribute("src", undoArray[undoArray.length-1]);
+			drawingContext.drawImage(image, 0, 0);
+		}
+	}
+});

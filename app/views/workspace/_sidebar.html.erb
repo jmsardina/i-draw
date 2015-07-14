@@ -1,0 +1,19 @@
+<div id="side-bar">
+	<div id="start-over"><strong>×</strong></div>
+
+	<img class="version-control" id="js-undo" src="<%= asset_path('undo.png') %>"/><br>
+	<img class="version-control" id="js-redo" src="<%= asset_path('redo.png') %>"/><br>
+
+	<div id="profile-holder"></div>
+
+	<span id="toggle-cartoon"><%= render 'shared/light_switch' %></span>	
+
+	<div id="profile"> 
+		<div id="profile-holder">
+			<img class='profile thumb trace-profile' src='<%= asset_path('trace.png') %>'/>
+    		<img class='profile thumb color-profile' src='<%= asset_path('color.png') %>'/>
+		</div>
+	</div>
+
+	<div id="complete-drawing">Done</div>
+</div>

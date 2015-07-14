@@ -1,0 +1,142 @@
+.modal-base {
+  background: rgba(61, 103, 65, 0.7);
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 999;
+
+  .modal-main {
+    background: white; 
+    bottom: 15%; 
+    font-family: comic sans MS;
+    height: 70%;
+    left: 15%; 
+    min-width: 341px;
+    overflow: scroll; 
+    position: fixed; 
+    width: 70%;
+    z-index: 1000;
+    text-align: center;
+    font-size: 40px;
+
+    &.profile-modal {
+      overflow: hidden;
+    }
+
+    .close-modal {
+      display: block;
+      float: right; 
+      position: fixed;
+    } 
+    
+    .modal-header {
+      background-color: rgb(234, 249, 234); /* honeydew */
+      font-size: 40px;
+      padding: 0;
+    }
+
+    table {
+      margin-top: 0;
+      overflow: none;
+   
+      .modal-body {
+        font-size: 30px;
+        text-align: center;
+
+        .github-note {
+          font-size: 15px;
+        }
+      }
+    }
+    
+
+    &#completed-drawing-modal {
+      width: 80%;
+      height: 90%;
+      left: 10%;
+      bottom: 5%;
+      top: 5%;
+      text-align: center;
+
+      .modal-header {
+        font-size: 26px;
+        background-color: yellow;
+      }
+
+      .canvas {
+        position: initial;
+      }
+    }
+  }
+
+  #about:hover {
+    color: red;
+    cursor: pointer;
+  }
+
+  &#profile-modal-base{
+
+    tr {
+      vertical-align: top;
+
+      &#profiles-container {
+        height: 200px;
+      }
+
+      .profile {
+        margin-top: 0;
+        width: 45%;
+      }
+    }
+  }
+}
+
+#profile {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+.profile {
+  cursor: pointer;
+  display: inline-block;
+  height: auto;
+  opacity: .5;
+
+  &.thumb {
+    margin-bottom: 10%;
+    margin-top: 10%;
+    width: 100%;
+    height: auto;
+  }
+
+  &.large {
+    margin-top: 5%;
+    width: 50%;   
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.profile-text {
+  font-family: comic sans ms;
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 5%;
+  margin-top:-10%;
+  position: absolute;
+  text-align: center;
+}
+
+#results-div {
+  .cartoon {
+    width: 24%;
+    height: auto;
+  }
+}
