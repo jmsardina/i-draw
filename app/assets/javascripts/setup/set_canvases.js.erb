@@ -1,29 +1,28 @@
 $(function setCanvases(){
-	var drawingCanvas = document.getElementById("drawing-canvas");
-	drawingContext = drawingCanvas.getContext("2d");
-
-	var undoArray = [];
-
-	$("#js-undo").on("click", undo);
-	$("#js-redo").on("click", redo);
-	
-	var imageHolder = document.getElementById("image-holder");
-	imageHolderContext = imageHolder.getContext("2d");
-
-	var completedDrawing = document.getElementById("completed-drawing");
-	completedDrawingContext = completedDrawing.getContext("2d");
-
 	$("canvas").attr( "height", $(".canvas-section").height() );
 	$("canvas").attr( "width", $(".canvas-section").width() );
 
+	var drawingCanvas = document.getElementById("drawing-canvas");
+		drawingContext = drawingCanvas.getContext("2d");
+	var imageHolder = document.getElementById("image-holder");
+		imageHolderContext = imageHolder.getContext("2d");
+	var completedDrawing = document.getElementById("completed-drawing");
+		completedDrawingContext = completedDrawing.getContext("2d");
+	
+	$("#js-undo").on("click", undo);
+	$("#js-redo").on("click", redo);
+
+	var image = document.createElement("img");
+	var paint = false;
+
+	var undoArray = [];
+	var redoArray = [];
 
 	$(function draw(){
-		var paint = false;
-
 		if ( identifyDevice() === 'mobile' ) {
-			document.getElementById('drawing-canvas').addEventListener("touchstart", startDrawing);
-			document.getElementById('drawing-canvas').addEventListener("touchmove", keepDrawing);
-			document.getElementById('drawing-canvas').addEventListener("touchend", stopDrawing);
+			drawingCanvas.addEventListener("touchstart", startDrawing);
+			drawingCanvas.addEventListener("touchmove", keepDrawing);
+			drawingCanvas.addEventListener("touchend", stopDrawing);
 		} else {
 			$("#drawing-canvas").on("mousedown", startDrawing);
 			$("#drawing-canvas").on("mousemove", keepDrawing);
@@ -40,8 +39,8 @@ $(function setCanvases(){
 
 		function keepDrawing(e){
 			if(paint){
-				  drawingContext.lineTo( (e.pageX - $(e.target).offset().left), (e.pageY - $(e.target).offset().top))
-				  drawingContext.stroke();
+				drawingContext.lineTo( (e.pageX - $(e.target).offset().left), (e.pageY - $(e.target).offset().top))
+				drawingContext.stroke();
 			}
 		}
 
@@ -58,32 +57,30 @@ $(function setCanvases(){
 	});
 
 	function recordHistory(){
-		var canvas = document.getElementById("drawing-canvas");
-		var dataURL = canvas.toDataURL();
+		var dataURL = drawingCanvas.toDataURL();
 		undoArray.push(dataURL);
 		
 		if(undoArray.length >= 10){
 			undoArray.splice(0, 1);
 		}
-		
-		var redoArray = [];
+
+		redoArray = [];	
 	}
 
 	function undo(){
 		if(undoArray.length >= 1){
-			drawingContext.clearRect(0, 0, $("#drawing-canvas").width(), $("#drawing-canvas").height());
-			var image = document.createElement("img");
-
-			redoArray.unshift(undoArray.pop());
-			image.setAttribute("src", redoArray[0]);
+			var lastStroke = undoArray.pop();
+			redoArray.unshift(lastStroke);
+			clearCanvas("#drawing-canvas", "drawingContext");
+		
+			image.setAttribute("src", undoArray[undoArray.length-1]);
 			drawingContext.drawImage(image, 0, 0);
 		}
 	}
 
 	function redo(){
 		if(redoArray.length >= 1){
-			drawingContext.clearRect(0, 0, $("#drawing-canvas").width, $("#drawing-canvas").height);
-			var image = document.createElement("img");
+			clearCanvas("#drawing-canvas", "drawingContext");
 
 			undoArray.push(redoArray.shift())
 			image.setAttribute("src", undoArray[undoArray.length-1]);
